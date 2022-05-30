@@ -13,7 +13,7 @@ const docTemplate = `{
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
-            "email": "your@mail.com"
+            "email": "p3nj@bumpto.space"
         },
         "license": {
             "name": "Apache 2.0",
@@ -673,7 +673,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "API",
+	Title:            "core API",
 	Description:      "This is an auto-generated API Docs.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

@@ -115,14 +115,14 @@ definitions:
     type: object
 info:
   contact:
-    email: your@mail.com
+    email: p3nj@bumpto.space
     name: API Support
   description: This is an auto-generated API Docs.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: API
+  title: core API
   version: "1.0"
 paths:
   /v1/book:

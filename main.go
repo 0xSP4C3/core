@@ -15,12 +15,12 @@ import (
 	_ "github.com/joho/godotenv/autoload" // load .env file automatically
 )
 
-// @title API
+// @title core API
 // @version 1.0
 // @description This is an auto-generated API Docs.
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
-// @contact.email your@mail.com
+// @contact.email p3nj@bumpto.space
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @securityDefinitions.apikey ApiKeyAuth
