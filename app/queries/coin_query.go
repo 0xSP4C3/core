@@ -2,6 +2,7 @@ package queries
 
 import (
 	"github.com/0xsp4c3/core/app/models"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -9,7 +10,7 @@ type CoinQueries struct {
     *sqlx.DB
 }
 
-
+// CreateCoin method for creating coin by given Coin object
 func (q *CoinQueries) CreateCoin(c *models.Coin) error {
     // Define query string.
     query := `INSERT INTO coins VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
@@ -23,5 +24,16 @@ func (q *CoinQueries) CreateCoin(c *models.Coin) error {
     }
 
     // This query should return nothing.
+    return nil
+}
+
+func (q *CoinQueries) DeleteCoin(id uuid.UUID) error {
+    query := `UPDATE coins SET is_deleted = 1 WHERE id = $1`
+
+    _, err := q.Exec(query, id)
+    if err != nil {
+        return err
+    }
+
     return nil
 }
