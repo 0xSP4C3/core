@@ -45,7 +45,7 @@ func GetExchanges(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Exchange ID"
-// @Success 200 {object} models.exchange
+// @Success 200 {object} models.Exchange
 // @Router /v1/exchange/{id} [get]
 func GetExchange(c *fiber.Ctx) error {
     id, err := uuid.Parse(c.Params("id"))
