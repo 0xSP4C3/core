@@ -55,6 +55,19 @@ func (q *CoinQueries) GetCoin(id uuid.UUID) (models.Coin, error) {
     return coin, nil
 }
 
+func (q *CoinQueries) UpdateCoin(id uuid.UUID, c *models.Coin) error {
+
+    query := `UPDATE coins SET updated_at $2, exchange_id = $3, name = $4, code = $5,
+    description = $6, is_deleted = $7, image_uri = $8, coin_uri = $9 WHERE id = $1`
+
+    _, err := q.Exec(query, c.ID, c.UpdatedAt, c.ExchangeId, c.Name, c.Code, c.Description, c.IsDeleted, c.ImageUri, c.CoinUri)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
 // CreateCoin method for creating coin by given Coin object
 func (q *CoinQueries) CreateCoin(c *models.Coin) error {
     // Define query string.
