@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/0xsp4c3/core/app/models"
+	"github.com/0xsp4c3/core/app/services"
 	"github.com/0xsp4c3/core/pkg/repository"
 	"github.com/0xsp4c3/core/pkg/utils"
-	"github.com/0xsp4c3/core/platform/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -20,18 +20,17 @@ import (
 // @Success 200 {array} models.Exchange
 // @Router /v1/exchange [get]
 func GetExchanges(c *fiber.Ctx) error {
-    db, err := database.OpenDBConnection()
+    statusCode, message, err, exchanges := services.GetExchanges()
     if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
             "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-    exchanges, err := db.GetExchanges()
-    if err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "exchanges were not found.",
+            "msg":      msg,
         })
     }
 
@@ -60,20 +59,17 @@ func GetExchange(c *fiber.Ctx) error {
             "msg":      err.Error(),
         })
     }
-
-    db, err := database.OpenDBConnection()
+    statusCode, message, err, exchange := services.GetExchange(id)
     if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
             "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    exchange, err := db.GetExchange(id)
-    if err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "exchange with the given ID is not found",
+            "msg":      msg,
             "exchange": nil,
         })
     }
@@ -85,6 +81,18 @@ func GetExchange(c *fiber.Ctx) error {
     })
 }
 
+// CreateExchange func for creates a new exchange.
+// @Description Create a new exchange.
+// @Summary create a new exchange
+// @Tags Exchange
+// @Accept json
+// @Produce json
+// @Param name body string true "Name"
+// @Param description body string true "Description"
+// @Param uri body models.CoinUri true "Exchange Uri"
+// @Success 200 {object} models.Exchange
+// @Security ApiKeyAuth
+// @Router /v1/exchange [post]
 func CreateExchange(c *fiber.Ctx) error {
     currentTime := time.Now().Unix()
 
@@ -122,41 +130,75 @@ func CreateExchange(c *fiber.Ctx) error {
         })
     }
 
-    db, err := database.OpenDBConnection()
+    statusCode, message, err := services.CreateExchange(exchange)
     if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
             "error":    true,
-            "msg":      err.Error(),
+            "msg":      msg,
         })
     }
-
-    time := time.Now()
-
-    validate := utils.NewValidator()
-
-    exchange.ID = uuid.New()
-    exchange.CreatedAt = time
-    exchange.UpdatedAt = time
-    exchange.IsBlocked = false
-    exchange.IsEnabled = true
-
-    if err := validate.Struct(exchange); err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error":    true,
-            "msg":      utils.ValidatorErrors(err),
-        })
-    }
-
-    if err := db.CreateExchange(exchange); err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    return c.Status(fiber.StatusOK).JSON(fiber.Map{
+    return c.Status(statusCode).JSON(fiber.Map{
         "error":    false,
-        "msg":      "Exchange created!",
+        "msg":      message,
         "exchange": exchange,
     })
+}
+
+func DeleteExchange(c *fiber.Ctx) error {
+    currentTime := time.Now().Unix()
+
+    claims, err := utils.ExtractTokenMetadata(c)
+    if err != nil{
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error":    true,
+            "msg":      err.Error(),
+        })
+    }
+
+    expireTime := claims.Expires
+
+    if currentTime > expireTime {
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+            "error":    true,
+            "msg":      "Unauthorized. Token expired.",
+        })
+    }
+    
+    credential := claims.Credentials[repository.ExchangeDeleteCredential]
+    if !credential {
+        return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+            "error":    true,
+            "msg":      "Forbidden. Permission denied.",
+        })
+    }
+
+    exchange := &models.Exchange{}
+
+    if err := c.BodyParser(exchange); err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error":    true,
+            "msg":      err.Error(),
+        })
+    }
+
+    statusCode, message, err := services.DeleteExchange(exchange)
+    if err != nil {
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error":    true,
+            "msg":      msg,
+        })
+    }
+    return c.SendStatus(statusCode)
 }
