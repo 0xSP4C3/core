@@ -87,6 +87,34 @@ definitions:
     - coin_id
     - uri
     type: object
+  models.Exchange:
+    properties:
+      created_at:
+        type: string
+      description:
+        maxLength: 255
+        type: string
+      id:
+        type: string
+      is_blocked:
+        description: We got blocked?
+        type: boolean
+      is_enabled:
+        description: Enable Crawling?
+        type: boolean
+      name:
+        maxLength: 25
+        type: string
+      updated_at:
+        type: string
+      uri:
+        type: string
+    required:
+    - id
+    - is_blocked
+    - is_enabled
+    - name
+    type: object
   models.User:
     properties:
       created_at:
@@ -437,6 +465,44 @@ paths:
       summary: get all exists coins
       tags:
       - Coins
+  /v1/exchange:
+    get:
+      consumes:
+      - application/json
+      description: Get all exists exchanges.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Exchange'
+            type: array
+      summary: get all exists exchanges
+      tags:
+      - exchange
+  /v1/exchange/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get exchange by given ID.
+      parameters:
+      - description: Exchange ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Exchange'
+      summary: get exchange by given ID
+      tags:
+      - Exchange
   /v1/token/renew:
     post:
       consumes:

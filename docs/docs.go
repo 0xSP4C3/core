@@ -510,6 +510,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/exchange": {
+            "get": {
+                "description": "Get all exists exchanges.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "exchange"
+                ],
+                "summary": "get all exists exchanges",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Exchange"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/exchange/{id}": {
+            "get": {
+                "description": "Get exchange by given ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exchange"
+                ],
+                "summary": "get exchange by given ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Exchange ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Exchange"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/token/renew": {
             "post": {
                 "security": [
@@ -789,6 +847,45 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uri": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Exchange": {
+            "type": "object",
+            "required": [
+                "id",
+                "is_blocked",
+                "is_enabled",
+                "name"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_blocked": {
+                    "description": "We got blocked?",
+                    "type": "boolean"
+                },
+                "is_enabled": {
+                    "description": "Enable Crawling?",
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 25
                 },
                 "updated_at": {
                     "type": "string"
