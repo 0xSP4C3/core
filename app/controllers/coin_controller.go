@@ -95,7 +95,7 @@ func GetCoin(c *fiber.Ctx) error {
 // @Param id path string true "Exchange ID"
 // @Success 200 {object} models.Coin
 // @route /v1/coinbyexchangeid/{id} [get]
-func GetCoinByExchangeId(c *fiber.Ctx) error {
+func GetCoinByExchangeID(c *fiber.Ctx) error {
     id, err := uuid.Parse(c.Params("id"))
     if err != nil {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
