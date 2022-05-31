@@ -36,3 +36,15 @@ func (q *ExchangeQueries) GetExchange(id uuid.UUID) (models.Exchange, error) {
 
     return exchange, nil
 }
+
+func (q *ExchangeQueries) CreateExchange(e *models.Exchange) error {
+    query := `INSERT INTO exchanges VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+
+    _, err := q.Exec(query, e.ID, e.CreatedAt, e.UpdatedAt, e.Name, e.Description, e.Uri, e.IsEnabled, e.IsBlocked) 
+
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
