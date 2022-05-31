@@ -323,6 +323,44 @@ paths:
       summary: create a new coin
       tags:
       - coin
+  /v1/coin/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get coin by given ID.
+      parameters:
+      - description: Coin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Coin'
+      summary: get coin by given ID
+      tags:
+      - Coin
+  /v1/coins:
+    get:
+      consumes:
+      - application/json
+      description: Get all exists coins.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Coin'
+            type: array
+      summary: get all exists coins
+      tags:
+      - coin
   /v1/token/renew:
     post:
       consumes:
