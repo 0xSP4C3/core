@@ -482,6 +482,41 @@ paths:
       summary: get all exists exchanges
       tags:
       - exchange
+    post:
+      consumes:
+      - application/json
+      description: Create a new exchange.
+      parameters:
+      - description: Name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Description
+        in: body
+        name: description
+        required: true
+        schema:
+          type: string
+      - description: Exchange Uri
+        in: body
+        name: uri
+        required: true
+        schema:
+          $ref: '#/definitions/models.CoinUri'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Exchange'
+      security:
+      - ApiKeyAuth: []
+      summary: create a new exchange
+      tags:
+      - Exchange
   /v1/exchange/{id}:
     get:
       consumes:
