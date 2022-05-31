@@ -345,7 +345,6 @@ func DeleteCoin(c *fiber.Ctx) error {
             "msg":      err.Error(),
         })
     }
-
     expireTime := claims.Expires
 
     if currentTime > expireTime {
