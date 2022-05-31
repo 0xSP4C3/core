@@ -12,17 +12,47 @@ type CoinQueries struct {
 
 // GetCoins method for getting all coins.
 func (q *CoinQueries) GetCoins() ([]models.Coin, error) {
-
+    // Define coins variable
     coins := []models.Coin{}
 
+    // Define query string
     query := `SELECT * FROM coins`
 
+    // Send query to database
     err := q.Get(&coins, query)
+    if err != nil {
+        // return empty object and error.
+        return coins, err
+    }
+    
+    // Return query result
+    return coins, nil
+}
+
+func (q *CoinQueries) GetCoinByExchangeID(exchangeID int) ([]models.Coin, error) {
+    coins := []models.Coin{}
+
+    query := `SELECT * FROM coins WHERE exchange_id = $1`
+
+    err := q.Get(&coins, query, exchangeID)
     if err != nil {
         return coins, err
     }
 
     return coins, nil
+} 
+
+func (q *CoinQueries) GetCoin(id uuid.UUID) (models.Coin, error) {
+    coin := models.Coin{}
+
+    query := `SELECT * FROM coins WHERE id = $1`
+
+    err := q.Get(&coin, query, id)
+    if err != nil {
+        return coin, err
+    }
+
+    return coin, nil
 }
 
 // CreateCoin method for creating coin by given Coin object
@@ -42,9 +72,11 @@ func (q *CoinQueries) CreateCoin(c *models.Coin) error {
     return nil
 }
 
+// Delete coin method for change is_deleted = 1 by given ID.
 func (q *CoinQueries) DeleteCoin(id uuid.UUID) error {
     query := `UPDATE coins SET is_deleted = 1 WHERE id = $1`
 
+    // Send query to database
     _, err := q.Exec(query, id)
     if err != nil {
         return err
