@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
+
 // GetCoins funcs gets all exists coins.
 // @Description Get all exists coins.
 // @Summary get all exists coins
@@ -40,6 +41,90 @@ func GetCoins(c *fiber.Ctx) error {
         "msg":      nil,
         "count":    len(coins),
         "coins":    coins,
+    })
+}
+
+// GetCoin func gets coin by given ID or 404 error.
+// @Description Get coin by given ID.
+// @Summary get coin by given ID
+// @Tags Coin
+// @Accept json
+// @Produce json
+// @Param id path string true "Coin ID"
+// @Success 200 {object} models.Coin
+// @Router /v1/coin/{id} [get]
+func GetCoin(c *fiber.Ctx) error {
+    id, err := uuid.Parse(c.Params("id"))
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": true,
+            "msg":  err.Error(),
+        })
+    }
+
+    db, err := database.OpenDBConnection()
+    if err != nil {
+      return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+        "error": true,
+        "msg":  err.Error(),
+      })
+    }
+
+    coin, err := db.GetCoin(id)
+    if err != nil {
+      return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+        "error": true,
+        "msg": "coin with the given ID is not found",
+        "coin": nil,
+      })
+    }
+
+    return c.JSON(fiber.Map{
+      "error":  false,
+      "msg":    nil,
+      "coin":   coin,
+    })
+}
+
+// GetCoinByExchangeId func gets coin by given ID of Exchange or 404 error.
+// @Description Get coin by given exchange ID
+// @Summary get coin by given exhcange ID
+// @Tags Coin
+// @Accept json
+// @Produce json
+// @Param id path string true "Exchange ID"
+// @Success 200 {object} models.Coin
+// @route /v1/coinbyexchangeid/{id} [get]
+func GetCoinByExchangeId(c *fiber.Ctx) error {
+    id, err := uuid.Parse(c.Params("id"))
+    if err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": true,
+            "msg":  err.Error(),
+        })
+    }
+    
+    db, err := database.OpenDBConnection()
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": true,
+            "msg": err.Error(),
+        })
+    }
+
+    coin, err := db.GetCoinByExchangeID(id)
+    if err != nil {
+        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+            "error": true,
+            "msg": "coin with the given exchange ID is not found",
+            "coin": nil,
+        })
+    }
+
+    return c.JSON(fiber.Map{
+        "error": false,
+        "msg":  nil,
+        "coin": coin,
     })
 }
 
