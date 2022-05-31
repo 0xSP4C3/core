@@ -7,6 +7,7 @@ type Queries struct {
 	*queries.UserQueries // load queries from User model
 	*queries.BookQueries // load queries from Book model
     *queries.CoinQueries // load queries from Coin model
+    *queries.ExchangeQueries // load queries from Exchange model
 }
 
 // OpenDBConnection func for opening database connection.
@@ -22,5 +23,6 @@ func OpenDBConnection() (*Queries, error) {
 		UserQueries: &queries.UserQueries{DB: db}, // from User model
 		BookQueries: &queries.BookQueries{DB: db}, // from Book model
         CoinQueries: &queries.CoinQueries{DB: db}, // from Coin model
+        ExchangeQueries: &queries.ExchangeQueries{DB: db},
 	}, nil
 }

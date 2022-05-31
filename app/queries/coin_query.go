@@ -10,6 +10,21 @@ type CoinQueries struct {
     *sqlx.DB
 }
 
+// GetCoins method for getting all coins.
+func (q *CoinQueries) GetCoins() ([]models.Coin, error) {
+
+    coins := []models.Coin{}
+
+    query := `SELECT * FROM coins`
+
+    err := q.Get(&coins, query)
+    if err != nil {
+        return coins, err
+    }
+
+    return coins, nil
+}
+
 // CreateCoin method for creating coin by given Coin object
 func (q *CoinQueries) CreateCoin(c *models.Coin) error {
     // Define query string.

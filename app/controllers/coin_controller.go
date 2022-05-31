@@ -10,6 +10,38 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
+// GetCoins funcs gets all exists coins.
+// @Description Get all exists coins.
+// @Summary get all exists coins
+// @Tags coin
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.Coin
+// @Router /v1/coins [get]
+func GetCoins(c *fiber.Ctx) error {
+    db ,err := database.OpenDBConnection()
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": true,
+            "msg": err.Error(),
+        })
+    }
+
+    coins, err := db.GetCoins()
+    if err != nil {
+        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+            "error": true,
+            "msg":  "coins were not found",
+        })
+    }
+
+    return c.JSON(fiber.Map{
+        "error":    false,
+        "msg":      nil,
+        "count":    len(coins),
+        "coins":    coins,
+    })
+}
 
 // CreateCoin func for creates a new coin.
 // @Description Create a new coin.
