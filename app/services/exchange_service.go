@@ -52,14 +52,13 @@ func CreateExchange(e *models.Exchange) (int, string, error) {
 
     time := time.Now()
 
-    validate := utils.NewValidator()
-
     e.ID = uuid.New()
     e.CreatedAt = time
     e.UpdatedAt = time
     e.IsBlocked = false
     e.IsEnabled = true
 
+    validate := utils.NewValidator()
     if err := validate.Struct(e); err != nil {
         return fiber.StatusBadRequest, "", err
     }

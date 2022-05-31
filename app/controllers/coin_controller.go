@@ -201,14 +201,12 @@ func CreateCoin(c *fiber.Ctx) error {
     // define current time
     time := time.Now()
 
-    validate := utils.NewValidator()
-
     coin.ID = uuid.New()
     coin.CreatedAt = time
     coin.UpdatedAt = time
     coin.IsDeleted = false
 
-    // Validate coin fields.
+    validate := utils.NewValidator()
     if err := validate.Struct(coin); err != nil {
         // Return, if some fields are not valid.
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
