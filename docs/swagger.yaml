@@ -282,6 +282,29 @@ paths:
       tags:
       - Books
   /v1/coin:
+    delete:
+      consumes:
+      - application/json
+      description: Delete coin by given ID.
+      parameters:
+      - description: Coin ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ok
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: delete coin by given ID
+      tags:
+      - Coin
     post:
       consumes:
       - application/json
@@ -322,7 +345,60 @@ paths:
       - ApiKeyAuth: []
       summary: create a new coin
       tags:
-      - coin
+      - Coin
+    put:
+      consumes:
+      - application/json
+      description: Update coin.
+      parameters:
+      - description: Coin ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Code
+        in: body
+        name: code
+        required: true
+        schema:
+          type: string
+      - description: Description
+        in: body
+        name: description
+        required: true
+        schema:
+          type: string
+      - description: Exchange ID
+        in: body
+        name: exchange_id
+        required: true
+        schema:
+          type: string
+      - description: Coin Uri
+        in: body
+        name: coin_uri
+        required: true
+        schema:
+          $ref: '#/definitions/models.CoinUri'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: ok
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: update coin
+      tags:
+      - Coin
   /v1/coin/{id}:
     get:
       consumes:
@@ -360,7 +436,7 @@ paths:
             type: array
       summary: get all exists coins
       tags:
-      - coin
+      - Coins
   /v1/token/renew:
     post:
       consumes:
