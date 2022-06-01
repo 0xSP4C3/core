@@ -16,7 +16,9 @@ type Exchange struct {
     Description string    `db:"description" json:"description" validate:"lte=255"`
     Uri         string    `db:"uri" json:"uri"`
     // Enable Crawling?
-    IsEnabled   bool      `db:"is_enabled" json:"is_enabled" validate:"required"`
+    IsEnabled   bool      `db:"is_enabled" json:"is_enabled"`
     // We got blocked?
-    IsBlocked   bool      `db:"is_blocked" json:"is_blocked" validate:"required"`
+    IsBlocked   bool      `db:"is_blocked" json:"is_blocked"`
+    // Is Exchange gone?
+    IsDeleted   bool      `db:"is_deleted" json:"is_deleted"`
 }
