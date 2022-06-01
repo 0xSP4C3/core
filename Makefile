@@ -3,7 +3,7 @@
 APP_NAME = apiserver
 BUILD_DIR = $(PWD)/build
 MIGRATIONS_FOLDER = $(PWD)/platform/migrations
-DATABASE_URL = postgres://postgres:password@cgapp-postgres/postgres?sslmode=disable
+DATABASE_URL = postgres://postgres:bYDdskLUHmDyzeY8xnWJfxAhBVwpKumxw8MT3KnPFtTUV48qDKjoAjKWiPiKiXQV@core-postgres/postgres?sslmode=disable
 
 clean:
 	rm -rf ./build
@@ -47,17 +47,17 @@ docker.fiber.build:
 
 docker.fiber: docker.fiber.build
 	docker run --rm -d \
-		--name cgapp-fiber \
+		--name core-fiber \
 		--network dev-network \
 		-p 5000:5000 \
 		fiber
 
 docker.postgres:
 	docker run --rm -d \
-		--name cgapp-postgres \
+		--name core-postgres \
 		--network dev-network \
 		-e POSTGRES_USER=postgres \
-		-e POSTGRES_PASSWORD=password \
+		-e POSTGRES_PASSWORD=bYDdskLUHmDyzeY8xnWJfxAhBVwpKumxw8MT3KnPFtTUV48qDKjoAjKWiPiKiXQV \
 		-e POSTGRES_DB=postgres \
 		-v ${HOME}/dev-postgres/data/:/var/lib/postgresql/data \
 		-p 5432:5432 \
@@ -65,7 +65,7 @@ docker.postgres:
 
 docker.redis:
 	docker run --rm -d \
-		--name cgapp-redis \
+		--name core-redis \
 		--network dev-network \
 		-p 6379:6379 \
 		redis
@@ -73,13 +73,13 @@ docker.redis:
 docker.stop: docker.stop.fiber docker.stop.postgres docker.stop.redis
 
 docker.stop.fiber:
-	docker stop cgapp-fiber
+	docker stop core-fiber
 
 docker.stop.postgres:
-	docker stop cgapp-postgres
+	docker stop core-postgres
 
 docker.stop.redis:
-	docker stop cgapp-redis
+	docker stop core-redis
 
 swag:
 	swag init

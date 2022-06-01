@@ -97,7 +97,7 @@ func CreateExchange(c *fiber.Ctx) error {
 
     claims, err := utils.ExtractTokenMetadata(c)
     if err != nil {
-        c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
             "error":    true,
             "msg":      err.Error(),
         })
