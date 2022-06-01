@@ -14,11 +14,11 @@ import (
 // GetExchange funcs gets all exists exchanges.
 // @Description Get all exists exchanges.
 // @Summary get all exists exchanges
-// @Tags exchange
+// @Tags Exchanges
 // @Accept json
 // @Produce json
 // @Success 200 {array} models.Exchange
-// @Router /v1/exchange [get]
+// @Router /v1/exchanges [get]
 func GetExchanges(c *fiber.Ctx) error {
     statusCode, message, err, exchanges := services.GetExchanges()
     if err != nil {
