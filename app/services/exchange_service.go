@@ -52,7 +52,7 @@ func CreateExchange(e *models.Exchange) (int, string, error) {
 
     time := time.Now()
 
-    e.ID = uuid.New()
+    e.ID = uuid.New()   
     e.CreatedAt = time
     e.UpdatedAt = time
     e.IsBlocked = false
@@ -69,6 +69,38 @@ func CreateExchange(e *models.Exchange) (int, string, error) {
 
     return fiber.StatusOK, "Exchange created!", nil
 
+}
+
+func UpdateExchange(e *models.Exchange) (int, string, error, *models.Exchange) {
+    db, err := database.OpenDBConnection()
+    if err != nil {
+        return fiber.StatusInternalServerError, "", err, nil
+    }
+
+    item, err := db.GetExchange(e.ID)
+    if err != nil {
+        return fiber.StatusNotFound, 
+            "exhcange with this ID not found",
+            err,
+            nil
+    }
+
+    e.UpdatedAt = time.Now()
+
+    validate := utils.NewValidator()
+    if err := validate.StructPartial(e); err != nil {
+        return fiber.StatusBadRequest,
+            "",
+            err,
+            nil
+    }
+
+    if err := db.UpdateExchange(item.ID, e); err != nil {
+        return fiber.StatusInternalServerError, "", err, nil
+    }
+
+    return fiber.StatusNoContent, "", nil, &models.Exchange{}
+     
 }
 
 func DeleteExchange(e *models.Exchange) (int, string, error) {
