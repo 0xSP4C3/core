@@ -151,7 +151,7 @@ func CreateCoin(c *fiber.Ctx) error {
 
 	// Check, if token is expired.
 	if currentTime > expireTime {
-		//Return status 401 and unauthorized error message
+		// Return status 401 and unauthorized error message
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": true,
 			"msg":   "Unauthorized. Token expired.",
