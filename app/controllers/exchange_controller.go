@@ -150,6 +150,58 @@ func CreateExchange(c *fiber.Ctx) error {
     })
 }
 
+func UpdateExchange(c *fiber.Ctx) error {
+    currentTime := time.Now().Unix()
+
+    claims, err := utils.ExtractTokenMetadata(c)
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error":    true,
+            "msg":      err.Error(),
+        })
+    }
+
+    expireTime := claims.Expires
+    if currentTime > expireTime {
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+            "error":    true,
+            "msg":      "Unauthorized. Token expired.",
+        })
+    }
+    
+    credential := claims.Credentials[repository.ExchangeUpdateCredential]
+    if !credential {
+        return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+            "error":    true,
+            "msg":      "Forbidden. Permission denied.",
+        })
+    }
+    
+    exchange := &models.Exchange{}
+
+    if err := c.BodyParser(exchange); err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error":    true,
+            "msg":      err.Error(),
+        })
+    }
+
+    statusCode, message, err := services.UpdateExchange(exchange)
+    if err != nil {
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error":    true,
+            "msg":      msg,
+        })
+    }
+    return c.SendStatus(statusCode)
+}
+
 func DeleteExchange(c *fiber.Ctx) error {
     currentTime := time.Now().Unix()
 

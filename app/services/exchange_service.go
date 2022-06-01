@@ -71,18 +71,17 @@ func CreateExchange(e *models.Exchange) (int, string, error) {
 
 }
 
-func UpdateExchange(e *models.Exchange) (int, string, error, *models.Exchange) {
+func UpdateExchange(e *models.Exchange) (int, string, error) {
     db, err := database.OpenDBConnection()
     if err != nil {
-        return fiber.StatusInternalServerError, "", err, nil
+        return fiber.StatusInternalServerError, "", err
     }
 
     item, err := db.GetExchange(e.ID)
     if err != nil {
         return fiber.StatusNotFound, 
             "exhcange with this ID not found",
-            err,
-            nil
+            err
     }
 
     e.UpdatedAt = time.Now()
@@ -91,16 +90,14 @@ func UpdateExchange(e *models.Exchange) (int, string, error, *models.Exchange) {
     if err := validate.StructPartial(e); err != nil {
         return fiber.StatusBadRequest,
             "",
-            err,
-            nil
+            err
     }
 
     if err := db.UpdateExchange(item.ID, e); err != nil {
-        return fiber.StatusInternalServerError, "", err, nil
+        return fiber.StatusInternalServerError, "", err
     }
 
-    return fiber.StatusNoContent, "", nil, &models.Exchange{}
-     
+    return fiber.StatusNoContent, "", nil
 }
 
 func DeleteExchange(e *models.Exchange) (int, string, error) {
