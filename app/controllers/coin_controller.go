@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/0xsp4c3/core/app/models"
+	"github.com/0xsp4c3/core/app/services"
 	"github.com/0xsp4c3/core/pkg/repository"
 	"github.com/0xsp4c3/core/pkg/utils"
-	"github.com/0xsp4c3/core/platform/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -20,28 +20,26 @@ import (
 // @Success 200 {array} models.Coin
 // @Router /v1/coins [get]
 func GetCoins(c *fiber.Ctx) error {
-    db ,err := database.OpenDBConnection()
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
+	statusCode, message, err, coins := services.GetCoins()
+	if err != nil {
+		var msg string
+		if message == "" {
+			msg = err.Error()
+		} else {
+			msg = message
+		}
+		return c.Status(statusCode).JSON(fiber.Map{
+			"error": true,
+			"msg":   msg,
+		})
+	}
 
-    coins, err := db.GetCoins()
-    if err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "coins were not found",
-        })
-    }
-
-    return c.JSON(fiber.Map{
-        "error":    false,
-        "msg":      nil,
-        "count":    len(coins),
-        "coins":    coins,
-    })
+	return c.JSON(fiber.Map{
+		"error": false,
+		"msg":   nil,
+		"count": len(coins),
+		"coins": coins,
+	})
 }
 
 // GetCoin func gets coin by given ID or 404 error.
@@ -54,36 +52,33 @@ func GetCoins(c *fiber.Ctx) error {
 // @Success 200 {object} models.Coin
 // @Router /v1/coin/{id} [get]
 func GetCoin(c *fiber.Ctx) error {
-    id, err := uuid.Parse(c.Params("id"))
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
 
-    db, err := database.OpenDBConnection()
-    if err != nil {
-      return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-        "error":    true,
-        "msg":      err.Error(),
-      })
-    }
+	statusCode, message, err, coin := services.GetCoin(id)
+	if err != nil {
+		var msg string
+		if message == "" {
+			msg = err.Error()
+		} else {
+			msg = message
+		}
+		return c.Status(statusCode).JSON(fiber.Map{
+			"error": true,
+			"msg":   msg,
+		})
+	}
 
-    coin, err := db.GetCoin(id)
-    if err != nil {
-      return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-        "error":    true,
-        "msg":      "coin with the given ID is not found",
-        "coin":     nil,
-      })
-    }
-
-    return c.JSON(fiber.Map{
-      "error":  false,
-      "msg":    nil,
-      "coin":   coin,
-    })
+	return c.JSON(fiber.Map{
+		"error": false,
+		"msg":   nil,
+		"coin":  coin,
+	})
 }
 
 // GetCoinByExchangeId func gets coin by given ID of Exchange or 404 error.
@@ -95,37 +90,34 @@ func GetCoin(c *fiber.Ctx) error {
 // @Param id path string true "Exchange ID"
 // @Success 200 {object} models.Coin
 // @route /v1/coinbyexchangeid/{id} [get]
-func GetCoinByExchangeID(c *fiber.Ctx) error {
-    id, err := uuid.Parse(c.Params("id"))
-    if err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-    
-    db, err := database.OpenDBConnection()
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
+func GetCoinsByExchangeID(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
 
-    coin, err := db.GetCoinByExchangeID(id)
-    if err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "coin with the given exchange ID is not found",
-            "coin":     nil,
-        })
-    }
+	statusCode, message, err, coins := services.GetCoinByExchangeID(id)
+	if err != nil {
+		var msg string
+		if message == "" {
+			msg = err.Error()
+		} else {
+			msg = message
+		}
+		return c.Status(statusCode).JSON(fiber.Map{
+			"error": true,
+			"msg":   msg,
+		})
+	}
 
-    return c.JSON(fiber.Map{
-        "error":    false,
-        "msg":      nil,
-        "coin":     coin,
-    })
+	return c.JSON(fiber.Map{
+		"error": false,
+		"msg":   nil,
+		"coins": coins,
+	})
 }
 
 // CreateCoin func for creates a new coin.
@@ -142,92 +134,72 @@ func GetCoinByExchangeID(c *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Router /v1/coin [post]
 func CreateCoin(c *fiber.Ctx) error {
-    // Get current time
-    currentTime := time.Now().Unix()
-    
-    // Check Claims
-    claims, err := utils.ExtractTokenMetadata(c)
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
+	// Get current time
+	currentTime := time.Now().Unix()
+
+	// Check Claims
+	claims, err := utils.ExtractTokenMetadata(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	// Get token expires time from JWT token.
+	expireTime := claims.Expires
+
+	// Check, if token is expired.
+	if currentTime > expireTime {
+		//Return status 401 and unauthorized error message
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Unauthorized. Token expired.",
+		})
+	}
+
+	// Permission check
+	// Get permission list from JWT token.
+	credentials := claims.Credentials[repository.CoinCreateCredential]
+
+	// Forbidden request doesn't have enough premission.
+	if !credentials {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Forbidden. Permission denied.",
+		})
+	}
+
+	// create new coin struct
+	coin := &models.Coin{}
+
+	// Check, if received data is valid.
+	if err := c.BodyParser(coin); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	statusCode, message, err := services.CreateCoin(coin)   
+	if err != nil {
+		var msg string
+		if message == "" {
+            msg = err.Error()
+		} else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error": false,
+            "msg":   msg,
         })
-    }
-    
-    // Get token expires time from JWT token.
-    expireTime := claims.Expires
+	}
 
-    // Check, if token is expired.
-    if currentTime > expireTime {
-        //Return status 401 and unauthorized error message
-        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "Unauthorized. Token expired.",
-        })
-    }
-
-    // Permission check
-    // Get permission list from JWT token.
-    credentials := claims.Credentials[repository.CoinCreateCredential]
-
-    // Forbidden request doesn't have enough premission.
-    if !credentials {
-        return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "Forbidden. Permission denied.",
-        })
-    }
-
-    // create new coin struct
-    coin := &models.Coin{}
-
-    // Check, if received data is valid.
-    if err := c.BodyParser(coin); err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    // Create db connection
-    db, err := database.OpenDBConnection()
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    // define current time
-    time := time.Now()
-
-    coin.ID = uuid.New()
-    coin.CreatedAt = time
-    coin.UpdatedAt = time
-    coin.IsDeleted = false
-
-    validate := utils.NewValidator()
-    if err := validate.Struct(coin); err != nil {
-        // Return, if some fields are not valid.
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error":    true,
-            "msg":      utils.ValidatorErrors(err),
-        })
-    }
-
-    // Create coin
-    if err := db.CreateCoin(coin); err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    return c.Status(fiber.StatusOK).JSON(fiber.Map{
-        "error":    false,
-        "msg":      "Coin Created!",
-        "coin":     coin,
-    })
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"error":    false,
+		"msg":      "Coin Created!",
+		"coin":     coin,
+	})
 }
 
 // UpdateCoin func for updates coin by given ID.
@@ -246,80 +218,60 @@ func CreateCoin(c *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Router /v1/coin [put]
 func UpdateCoin(c *fiber.Ctx) error {
-    currentTime := time.Now().Unix()
+	currentTime := time.Now().Unix()
 
-    claims, err:= utils.ExtractTokenMetadata(c)
+	claims, err := utils.ExtractTokenMetadata(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	expireTime := claims.Expires
+
+	if currentTime > expireTime {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Unauthorized. Token expired.",
+		})
+	}
+
+	credential := claims.Credentials[repository.CoinUpdateCredential]
+
+	if !credential {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Forbidden. Permission denied.",
+		})
+	}
+
+	coin := &models.Coin{}
+
+	if err := c.BodyParser(coin); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+    statusCode, message, err := services.UpdateCoin(coin)
     if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error": true,
+            "msg":   msg,
         })
     }
-    
-    expireTime := claims.Expires
-
-    if currentTime > expireTime {
-        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "Unauthorized. Token expired.",
-        })
-    }
-
-    credential := claims.Credentials[repository.CoinUpdateCredential]
-
-    if !credential {
-        return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "Forbidden. Permission denied.",
-        })
-    }
-
-    coin := &models.Coin{}
-
-    if err := c.BodyParser(coin); err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    db, err := database.OpenDBConnection()
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    foundedCoin, err := db.GetCoin(coin.ID)
-    if err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "coin with this ID not found",
-        })
-    } 
-
-    coin.UpdatedAt = time.Now()
-    
-    validate := utils.NewValidator()
-    if err := validate.Struct(coin); err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    if err := db.UpdateCoin(foundedCoin.ID, coin); err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-        "error":    false,
-        "msg":      nil,
-    })
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
+		"error": false,
+		"msg":   nil,
+	})
 }
 
 // DeleteCoin func for deletes coin by given ID.
@@ -333,74 +285,55 @@ func UpdateCoin(c *fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Router /v1/coin [delete]
 func DeleteCoin(c *fiber.Ctx) error {
-    currentTime := time.Now().Unix()
+	currentTime := time.Now().Unix()
 
-    claims, err := utils.ExtractTokenMetadata(c)
+	claims, err := utils.ExtractTokenMetadata(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+	expireTime := claims.Expires
+
+	if currentTime > expireTime {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Unauthorized. Token expired.",
+		})
+	}
+
+	credential := claims.Credentials[repository.CoinDeleteCredential]
+
+	if !credential {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": true,
+			"msg":   "Forbidden. Permission denied.",
+		})
+	}
+
+	coin := &models.Coin{}
+
+	if err := c.BodyParser(coin); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+    statusCode, message, err := services.DeleteCoin(coin)
     if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-    expireTime := claims.Expires
-
-    if currentTime > expireTime {
-        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "Unauthorized. Token expired.",
-        })
-    }
-
-    credential := claims.Credentials[repository.CoinDeleteCredential]
-
-    if !credential {
-        return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "Forbidden. Permission denied.", 
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error": true,
+            "msg":   msg,
         })
     }
 
-    coin := &models.Coin{}
-    
-    if err := c.BodyParser(coin); err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-    
-    validate := utils.NewValidator()
-
-    if err := validate.StructPartial(coin, "id"); err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error":    true,
-            "msg":      utils.ValidatorErrors(err),
-        })
-    }
-
-    db, err := database.OpenDBConnection()
-
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    foundedCoin, err := db.GetCoin(coin.ID)
-    if err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-            "error":    true,
-            "msg":      "Not found. Coin with this ID not found.",
-        })
-    }
-
-    if err:= db.DeleteBook(foundedCoin.ID); err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error":    true,
-            "msg":      err.Error(),
-        })
-    }
-
-    return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(fiber.StatusNoContent)
 }
