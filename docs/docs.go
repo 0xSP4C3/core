@@ -511,30 +511,6 @@ const docTemplate = `{
             }
         },
         "/v1/exchange": {
-            "get": {
-                "description": "Get all exists exchanges.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "exchange"
-                ],
-                "summary": "get all exists exchanges",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Exchange"
-                            }
-                        }
-                    }
-                }
-            },
             "put": {
                 "security": [
                     {
@@ -728,6 +704,32 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Exchange"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/exchanges": {
+            "get": {
+                "description": "Get all exists exchanges.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Exchanges"
+                ],
+                "summary": "get all exists exchanges",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Exchange"
+                            }
                         }
                     }
                 }
