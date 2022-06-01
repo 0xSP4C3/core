@@ -29,7 +29,7 @@ func GetCoin(id uuid.UUID) (int, string, error, *models.Coin) {
 
     db, err := database.OpenDBConnection()
     if err != nil {
-        return fiber.StatusInternalServerError, "", nil, nil
+        return fiber.StatusInternalServerError, "", err, nil
     }
 
     coin, err := db.GetCoin(id)
@@ -42,7 +42,7 @@ func GetCoin(id uuid.UUID) (int, string, error, *models.Coin) {
 func GetCoinByExchangeID(id uuid.UUID) (int, string, error, []models.Coin) {
     db, err := database.OpenDBConnection()
     if err != nil {
-        return fiber.StatusInternalServerError, "", nil, nil
+        return fiber.StatusInternalServerError, "", err, nil
     }
 
     exchange, err := db.GetExchange(id)
