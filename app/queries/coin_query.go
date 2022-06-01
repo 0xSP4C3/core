@@ -29,7 +29,7 @@ func (q *CoinQueries) GetCoins() ([]models.Coin, error) {
     return coins, nil
 }
 
-func (q *CoinQueries) GetCoinByExchangeID(exchangeID uuid.UUID) ([]models.Coin, error) {
+func (q *CoinQueries) GetCoinsByExchangeID(exchangeID uuid.UUID) ([]models.Coin, error) {
     coins := []models.Coin{}
 
     query := `SELECT * FROM coins WHERE exchange_id = $1`
