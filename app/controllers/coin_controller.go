@@ -297,12 +297,11 @@ func UpdateCoin(c *fiber.Ctx) error {
             "error":    true,
             "msg":      "coin with this ID not found",
         })
-    }
-    
+    } 
+
     coin.UpdatedAt = time.Now()
     
     validate := utils.NewValidator()
-
     if err := validate.Struct(coin); err != nil {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
             "error":    true,
