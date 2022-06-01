@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetExchanges() (int, string, error, []models.Exchange) {
+func GetExchanges() (int, string, error, *[]models.Exchange) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -24,7 +24,7 @@ func GetExchanges() (int, string, error, []models.Exchange) {
             nil
     }
 
-    return fiber.StatusOK, "", nil, exchanges
+    return fiber.StatusOK, "", nil, &exchanges
 }
 
 func GetExchange(id uuid.UUID) (int, string, error, *models.Exchange) {
