@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"context"
 	"time"
 
 	"github.com/0xsp4c3/core/app/models"
+	"github.com/0xsp4c3/core/app/services"
 	"github.com/0xsp4c3/core/pkg/utils"
 	"github.com/0xsp4c3/core/platform/cache"
 	"github.com/0xsp4c3/core/platform/database"
@@ -75,65 +75,19 @@ func RenewTokens(c *fiber.Ctx) error {
 		// Define user ID.
 		userID := claims.UserID
 
-		// Create database connection.
-		db, err := database.OpenDBConnection()
-		if err != nil {
-			// Return status 500 and database connection error.
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": true,
-				"msg":   err.Error(),
-			})
-		}
-
-		// Get user by ID.
-		foundedUser, err := db.GetUserByID(userID)
-		if err != nil {
-			// Return, if user not found.
-			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": true,
-				"msg":   "user with the given ID is not found",
-			})
-		}
-
-		// Get role credentials from founded user.
-		credentials, err := utils.GetCredentialsByRole(foundedUser.UserRole)
-		if err != nil {
-			// Return status 400 and error message.
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": true,
-				"msg":   err.Error(),
-			})
-		}
-
-		// Generate JWT Access & Refresh tokens.
-		tokens, err := utils.GenerateNewTokens(userID.String(), credentials)
-		if err != nil {
-			// Return status 500 and token generation error.
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": true,
-				"msg":   err.Error(),
-			})
-		}
-
-		// Create a new Redis connection.
-		connRedis, err := cache.RedisConnection()
-		if err != nil {
-			// Return status 500 and Redis connection error.
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": true,
-				"msg":   err.Error(),
-			})
-		}
-
-		// Save refresh token to Redis.
-		errRedis := connRedis.Set(context.Background(), userID.String(), tokens.Refresh, 0).Err()
-		if errRedis != nil {
-			// Return status 500 and Redis connection error.
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": true,
-				"msg":   errRedis.Error(),
-			})
-		}
+        statusCode, message, err, tokens := services.RenewTokens(userID)
+        if err != nil {
+            var msg string
+            if message == "" {
+                msg = err.Error()
+            } else {
+                msg = message
+            }
+            return c.Status(statusCode).JSON(fiber.Map{
+                "error": true,
+                "msg":   msg,
+            })
+        }
 
 		return c.JSON(fiber.Map{
 			"error": false,
