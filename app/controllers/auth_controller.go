@@ -1,16 +1,11 @@
 package controllers
 
 import (
-	"context"
-	"time"
-
 	"github.com/0xsp4c3/core/app/models"
+	"github.com/0xsp4c3/core/app/services"
 	"github.com/0xsp4c3/core/pkg/utils"
-	"github.com/0xsp4c3/core/platform/cache"
-	"github.com/0xsp4c3/core/platform/database"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 // UserSignUp method to create a new user.
@@ -37,69 +32,19 @@ func UserSignUp(c *fiber.Ctx) error {
 		})
 	}
 
-	// Create a new validator for a User model.
-	validate := utils.NewValidator()
-
-	// Validate sign up fields.
-	if err := validate.Struct(signUp); err != nil {
-		// Return, if some fields are not valid.
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   utils.ValidatorErrors(err),
-		})
-	}
-
-	// Create database connection.
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		// Return status 500 and database connection error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Checking role from sign up data.
-	role, err := utils.VerifyRole(signUp.UserRole)
-	if err != nil {
-		// Return status 400 and error message.
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Create a new user struct.
-	user := &models.User{}
-
-	// Set initialized default data for user:
-	user.ID = uuid.New()
-	user.CreatedAt = time.Now()
-	user.Email = signUp.Email
-	user.PasswordHash = utils.GeneratePassword(signUp.Password)
-	user.UserStatus = 1 // 0 == blocked, 1 == active
-	user.UserRole = role
-
-	// Validate user fields.
-	if err := validate.Struct(user); err != nil {
-		// Return, if some fields are not valid.
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   utils.ValidatorErrors(err),
-		})
-	}
-
-	// Create a new user with validated data.
-	if err := db.CreateUser(user); err != nil {
-		// Return status 500 and create user process error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Delete password hash field from JSON view.
-	user.PasswordHash = ""
+    statusCode, message, err, user := services.UserSignUp(signUp)
+    if err != nil {
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error": true,
+            "msg":   msg,
+        })
+    }
 
 	// Return status 200 OK.
 	return c.JSON(fiber.Map{
@@ -132,78 +77,19 @@ func UserSignIn(c *fiber.Ctx) error {
 		})
 	}
 
-	// Create database connection.
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		// Return status 500 and database connection error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Get user by email.
-	foundedUser, err := db.GetUserByEmail(signIn.Email)
-	if err != nil {
-		// Return, if user not found.
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": true,
-			"msg":   "user with the given email is not found",
-		})
-	}
-
-	// Compare given user password with stored in found user.
-	compareUserPassword := utils.ComparePasswords(foundedUser.PasswordHash, signIn.Password)
-	if !compareUserPassword {
-		// Return, if password is not compare to stored in database.
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   "wrong user email address or password",
-		})
-	}
-
-	// Get role credentials from founded user.
-	credentials, err := utils.GetCredentialsByRole(foundedUser.UserRole)
-	if err != nil {
-		// Return status 400 and error message.
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Generate a new pair of access and refresh tokens.
-	tokens, err := utils.GenerateNewTokens(foundedUser.ID.String(), credentials)
-	if err != nil {
-		// Return status 500 and token generation error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Define user ID.
-	userID := foundedUser.ID.String()
-
-	// Create a new Redis connection.
-	connRedis, err := cache.RedisConnection()
-	if err != nil {
-		// Return status 500 and Redis connection error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Save refresh token to Redis.
-	errSaveToRedis := connRedis.Set(context.Background(), userID, tokens.Refresh, 0).Err()
-	if errSaveToRedis != nil {
-		// Return status 500 and Redis connection error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   errSaveToRedis.Error(),
-		})
-	}
+    statusCode, message, err, tokens := services.UserSignIn(signIn)
+    if err != nil {
+        var msg string
+        if message == "" {
+            msg = err.Error()
+        } else {
+            msg = message
+        }
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error": true,
+            "msg":   msg,
+        })
+    }
 
 	// Return status 200 OK.
 	return c.JSON(fiber.Map{
@@ -239,25 +125,13 @@ func UserSignOut(c *fiber.Ctx) error {
 	// Define user ID.
 	userID := claims.UserID.String()
 
-	// Create a new Redis connection.
-	connRedis, err := cache.RedisConnection()
-	if err != nil {
-		// Return status 500 and Redis connection error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	// Save refresh token to Redis.
-	errDelFromRedis := connRedis.Del(context.Background(), userID).Err()
-	if errDelFromRedis != nil {
-		// Return status 500 and Redis deletion error.
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   errDelFromRedis.Error(),
-		})
-	}
+    statusCode, err := services.UserSignOut(userID)
+    if err != nil {
+        return c.Status(statusCode).JSON(fiber.Map{
+            "error": true,
+            "msg":   err.Error(),
+        })
+    }
 
 	// Return status 204 no content.
 	return c.SendStatus(fiber.StatusNoContent)
