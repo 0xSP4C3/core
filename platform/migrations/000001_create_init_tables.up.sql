@@ -39,6 +39,7 @@ CREATE TABLE exchanges (
   uri           VARCHAR(2000) NULL,
   is_enabled    BOOLEAN DEFAULT 1,
   is_blocked    BOOLEAN DEFAULT 0,
+  is_deleted    BOOLEAN DEFAULT 0,
 )
 
 -- Create coins table
