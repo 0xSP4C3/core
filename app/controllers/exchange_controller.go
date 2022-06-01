@@ -89,7 +89,6 @@ func GetExchange(c *fiber.Ctx) error {
 // @Produce json
 // @Param name body string true "Name"
 // @Param description body string true "Description"
-// @Param uri body models.CoinUri true "Exchange Uri"
 // @Success 200 {object} models.Exchange
 // @Security ApiKeyAuth
 // @Router /v1/exchange [post]
@@ -150,6 +149,21 @@ func CreateExchange(c *fiber.Ctx) error {
     })
 }
 
+// UpdateExchange func for updates exchange by given ID.
+// @Description Update exchange.
+// @Summary update exchange
+// @Tags Exchange
+// @Accept json
+// @Produce json
+// @Param id body string true "Exchange ID"
+// @Param name body string true "Name"
+// @Param description body string true "Description"
+// @Param uri body string true "Uri"
+// @Param is_enabled body boolean true "Is Enabled"
+// @Param is_blocked body boolean true "Is Blocked"
+// @Success 202 {string} status "ok"
+// @Security ApiKeyAuth
+// @Router /v1/exchange [put]
 func UpdateExchange(c *fiber.Ctx) error {
     currentTime := time.Now().Unix()
 
@@ -202,6 +216,16 @@ func UpdateExchange(c *fiber.Ctx) error {
     return c.SendStatus(statusCode)
 }
 
+// DeleteExchange func for deletes exchange by given ID.
+// @Description Delete Exchange by given ID.
+// @Summary delete exchange by given ID
+// @Tags Exchange
+// @Accept json
+// @Produce json
+// @Param id body string true "Exchange ID"
+// @Success 204 {string} status "ok"
+// @Security ApiKeyAuth
+// @Router /v1/exchange [delete]
 func DeleteExchange(c *fiber.Ctx) error {
     currentTime := time.Now().Unix()
 
