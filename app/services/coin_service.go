@@ -11,7 +11,7 @@ import (
 )
 
 
-func GetCoins() (int, string, error, []models.Coin) {
+func GetCoins() (statusCode int, message string, err error, results []models.Coin) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -25,7 +25,7 @@ func GetCoins() (int, string, error, []models.Coin) {
     return fiber.StatusOK, "", nil, coins
 }
 
-func GetCoin(id uuid.UUID) (int, string, error, *models.Coin) {
+func GetCoin(id uuid.UUID) (statusCode int, message string, err error, result *models.Coin) {
 
     db, err := database.OpenDBConnection()
     if err != nil {
@@ -39,7 +39,7 @@ func GetCoin(id uuid.UUID) (int, string, error, *models.Coin) {
     return fiber.StatusOK, "", nil, &coin
 }
 
-func GetCoinByExchangeID(id uuid.UUID) (int, string, error, []models.Coin) {
+func GetCoinByExchangeID(id uuid.UUID) (statusCode int, message string, err error, results []models.Coin) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -58,7 +58,7 @@ func GetCoinByExchangeID(id uuid.UUID) (int, string, error, []models.Coin) {
     return fiber.StatusOK, "", nil, coins
 }
 
-func CreateCoin(c *models.Coin) (int, string, error) {
+func CreateCoin(c *models.Coin) (statusCode int, message string, err error) {
 	// Create db connection
 	db, err := database.OpenDBConnection()
 	if err != nil {
@@ -66,11 +66,11 @@ func CreateCoin(c *models.Coin) (int, string, error) {
 	}
 
 	// define current time
-	time := time.Now()
+	currentTime := time.Now()
 
 	c.ID = uuid.New()
-	c.CreatedAt = time
-	c.UpdatedAt = time
+	c.CreatedAt = currentTime
+	c.UpdatedAt = currentTime
 	c.IsDeleted = false
 
 	validate := utils.NewValidator()
@@ -87,7 +87,7 @@ func CreateCoin(c *models.Coin) (int, string, error) {
     return fiber.StatusCreated, "", nil
 }
 
-func UpdateCoin(c *models.Coin) (int, string, error) {
+func UpdateCoin(c *models.Coin) (statusCode int, message string, err error) {
 	db, err := database.OpenDBConnection()
 	if err != nil {
         return fiber.StatusInternalServerError, "", err
@@ -112,7 +112,7 @@ func UpdateCoin(c *models.Coin) (int, string, error) {
     return fiber.StatusNoContent, "", nil
 }
 
-func DeleteCoin(c *models.Coin) (int, string, error) {
+func DeleteCoin(c *models.Coin) (statusCode int, message string, err error) {
     validate := utils.NewValidator()
     if err := validate.StructPartial(c); err != nil {
         return fiber.StatusBadRequest, "", err

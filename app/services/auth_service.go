@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func UserSignUp(signUp *models.SignUp) (int, string, error, *models.User) {
+func UserSignUp(signUp *models.SignUp) (statusCode int, message string, err error, result *models.User) {
 	// Create a new validator for a User model.
 	validate := utils.NewValidator()
 
@@ -73,7 +73,7 @@ func UserSignUp(signUp *models.SignUp) (int, string, error, *models.User) {
     return fiber.StatusOK, "", nil, user
 }
 
-func UserSignIn(signIn *models.SignIn) (int, string, error, *utils.Tokens) {
+func UserSignIn(signIn *models.SignIn) (statusCode int, message string, err error, result *utils.Tokens) {
 	// Create database connection.
 	db, err := database.OpenDBConnection()
 	if err != nil {
@@ -129,7 +129,7 @@ func UserSignIn(signIn *models.SignIn) (int, string, error, *utils.Tokens) {
     return fiber.StatusOK, "", nil, tokens
 }
 
-func UserSignOut(userID string) (int, error) {
+func UserSignOut(userID string) (statusCode int, err error) {
 
 	// Create a new Redis connection.
 	connRedis, err := cache.RedisConnection()

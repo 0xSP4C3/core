@@ -11,7 +11,7 @@ import (
 )
 
 
-func RenewTokens(id uuid.UUID) (int, string, error, *utils.Tokens) {
+func RenewTokens(id uuid.UUID) (statusCode int, message string, err error, result *utils.Tokens) {
 
     // Create database connection.
     db, err := database.OpenDBConnection()

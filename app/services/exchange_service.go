@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetExchanges() (int, string, error, []models.Exchange) {
+func GetExchanges() (statusCode int, message string, err error, results []models.Exchange) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -27,7 +27,7 @@ func GetExchanges() (int, string, error, []models.Exchange) {
     return fiber.StatusOK, "", nil, exchanges
 }
 
-func GetExchange(id uuid.UUID) (int, string, error, *models.Exchange) {
+func GetExchange(id uuid.UUID) (statusCode int, message string, err error, result *models.Exchange) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -44,17 +44,17 @@ func GetExchange(id uuid.UUID) (int, string, error, *models.Exchange) {
     return fiber.StatusOK, "", nil, &exchange
 }
 
-func CreateExchange(e *models.Exchange) (int, string, error) {
+func CreateExchange(e *models.Exchange) (statusCode int, message string, err error) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err
     }
 
-    time := time.Now()
+    currentTime := time.Now()
 
     e.ID = uuid.New()   
-    e.CreatedAt = time
-    e.UpdatedAt = time
+    e.CreatedAt = currentTime
+    e.UpdatedAt = currentTime
     e.IsBlocked = false
     e.IsEnabled = true
 
@@ -71,7 +71,7 @@ func CreateExchange(e *models.Exchange) (int, string, error) {
 
 }
 
-func UpdateExchange(e *models.Exchange) (int, string, error) {
+func UpdateExchange(e *models.Exchange) (statusCode int, message string, err error) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err
@@ -100,7 +100,7 @@ func UpdateExchange(e *models.Exchange) (int, string, error) {
     return fiber.StatusNoContent, "", nil
 }
 
-func DeleteExchange(e *models.Exchange) (int, string, error) {
+func DeleteExchange(e *models.Exchange) (statusCode int, message string, err error) {
 
     validate := utils.NewValidator()
     if err := validate.StructPartial(e, "id"); err != nil {
