@@ -99,6 +99,9 @@ definitions:
       is_blocked:
         description: We got blocked?
         type: boolean
+      is_deleted:
+        description: Is Exchange gone?
+        type: boolean
       is_enabled:
         description: Enable Crawling?
         type: boolean
@@ -111,8 +114,6 @@ definitions:
         type: string
     required:
     - id
-    - is_blocked
-    - is_enabled
     - name
     type: object
   models.User:
@@ -466,6 +467,29 @@ paths:
       tags:
       - Coins
   /v1/exchange:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Exchange by given ID.
+      parameters:
+      - description: Exchange ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ok
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: delete exchange by given ID
+      tags:
+      - Exchange
     get:
       consumes:
       - application/json
@@ -499,12 +523,6 @@ paths:
         required: true
         schema:
           type: string
-      - description: Exchange Uri
-        in: body
-        name: uri
-        required: true
-        schema:
-          $ref: '#/definitions/models.CoinUri'
       produces:
       - application/json
       responses:
@@ -515,6 +533,59 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: create a new exchange
+      tags:
+      - Exchange
+    put:
+      consumes:
+      - application/json
+      description: Update exchange.
+      parameters:
+      - description: Exchange ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: Name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Description
+        in: body
+        name: description
+        required: true
+        schema:
+          type: string
+      - description: Uri
+        in: body
+        name: uri
+        required: true
+        schema:
+          type: string
+      - description: Is Enabled
+        in: body
+        name: is_enabled
+        required: true
+        schema:
+          type: boolean
+      - description: Is Blocked
+        in: body
+        name: is_blocked
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: ok
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: update exchange
       tags:
       - Exchange
   /v1/exchange/{id}:
