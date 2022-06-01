@@ -6,9 +6,6 @@ import (
 	"github.com/0xsp4c3/core/app/models"
 	"github.com/0xsp4c3/core/app/services"
 	"github.com/0xsp4c3/core/pkg/utils"
-	"github.com/0xsp4c3/core/platform/cache"
-	"github.com/0xsp4c3/core/platform/database"
-
 	"github.com/gofiber/fiber/v2"
 )
 
