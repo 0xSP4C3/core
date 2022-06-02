@@ -3,7 +3,7 @@
 APP_NAME = apiserver
 BUILD_DIR = $(PWD)/build
 MIGRATIONS_FOLDER = $(PWD)/platform/migrations
-DATABASE_URL = postgres://postgres:bYDdskLUHmDyzeY8xnWJfxAhBVwpKumxw8MT3KnPFtTUV48qDKjoAjKWiPiKiXQV@core-postgres/postgres?sslmode=disable
+DATABASE_URL = postgres://postgres:bYDdskLUHmDyzeY8xnWJfxAhBVwpKumxw8MT3KnPFtTUV48qDKjoAjKWiPiKiXQV@localhost/postgres?sslmode=disable
 
 clean:
 	rm -rf ./build
@@ -49,7 +49,7 @@ docker.fiber: docker.fiber.build
 	docker run --rm -d \
 		--name core-fiber \
 		--network dev-network \
-		-p 5000:5000 \
+		-p 4000:4000 \
 		fiber
 
 docker.postgres:
