@@ -24,14 +24,14 @@ func TestPublicRoutes(t *testing.T) {
 		expectedCode  int
 	}{
 		{
-			description:   "get book by ID",
-			route:         "/api/v1/book/" + uuid.New().String(),
+			description:   "get coin by ID",
+			route:         "/api/v1/coin/" + uuid.New().String(),
 			expectedError: false,
 			expectedCode:  404,
 		},
 		{
-			description:   "get book by invalid ID (non UUID)",
-			route:         "/api/v1/book/123456",
+			description:   "get coin by invalid ID (non UUID)",
+			route:         "/api/v1/coin/123456",
 			expectedError: false,
 			expectedCode:  500,
 		},

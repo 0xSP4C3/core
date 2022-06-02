@@ -22,10 +22,10 @@ func TestPrivateRoutes(t *testing.T) {
 	// Create a sample data string.
 	dataString := `{"id": "00000000-0000-0000-0000-000000000000"}`
 
-	// Create token with `book:delete` credential.
+	// Create token with `coin:delete` credential.
 	tokenOnlyDelete, err := utils.GenerateNewTokens(
 		uuid.NewString(),
-		[]string{"book:delete"},
+		[]string{"coin:delete"},
 	)
 	if err != nil {
 		panic(err)
@@ -51,8 +51,8 @@ func TestPrivateRoutes(t *testing.T) {
 		expectedCode  int
 	}{
 		{
-			description:   "delete book without JWT and body",
-			route:         "/api/v1/book",
+			description:   "delete coin without JWT and body",
+			route:         "/api/v1/coin",
 			method:        "DELETE",
 			tokenString:   "",
 			body:          nil,
@@ -60,8 +60,8 @@ func TestPrivateRoutes(t *testing.T) {
 			expectedCode:  400,
 		},
 		{
-			description:   "delete book without right credentials",
-			route:         "/api/v1/book",
+			description:   "delete coin without right credentials",
+			route:         "/api/v1/coin",
 			method:        "DELETE",
 			tokenString:   "Bearer " + tokenNoAccess.Access,
 			body:          strings.NewReader(dataString),
@@ -69,8 +69,8 @@ func TestPrivateRoutes(t *testing.T) {
 			expectedCode:  403,
 		},
 		{
-			description:   "delete book with credentials",
-			route:         "/api/v1/book",
+			description:   "delete coin with credentials",
+			route:         "/api/v1/coin",
 			method:        "DELETE",
 			tokenString:   "Bearer " + tokenOnlyDelete.Access,
 			body:          strings.NewReader(dataString),
