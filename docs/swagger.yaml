@@ -154,6 +154,23 @@ info:
   title: core API
   version: "1.0"
 paths:
+  /api/v1/books:
+    get:
+      consumes:
+      - application/json
+      description: Get all exists books.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Book'
+            type: array
+      summary: get all exists books
+      tags:
+      - Books
   /v1/book:
     delete:
       consumes:
@@ -293,23 +310,6 @@ paths:
       summary: get book by given ID
       tags:
       - Book
-  /v1/books:
-    get:
-      consumes:
-      - application/json
-      description: Get all exists books.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Book'
-            type: array
-      summary: get all exists books
-      tags:
-      - Books
   /v1/coin:
     delete:
       consumes:
