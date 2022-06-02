@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Set timezone
 -- For more information, please visit:
 -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-SET TIMEZONE="Europe/Moscow";
+SET TIMEZONE="GMT";
 
 -- Create users table
 CREATE TABLE users (
@@ -37,10 +37,10 @@ CREATE TABLE exchanges (
   name          VARCHAR(25) NOT NULL,
   description   VARCHAR(1000) NULL,
   uri           VARCHAR(2000) NULL,
-  is_enabled    BOOLEAN DEFAULT 1,
-  is_blocked    BOOLEAN DEFAULT 0,
-  is_deleted    BOOLEAN DEFAULT 0,
-)
+  is_enabled    BOOLEAN DEFAULT TRUE,
+  is_blocked    BOOLEAN DEFAULT FALSE,
+  is_deleted    BOOLEAN DEFAULT FALSE
+);
 
 -- Create coins table
 CREATE TABLE coins (
@@ -51,18 +51,18 @@ CREATE TABLE coins (
   name          VARCHAR(25) NOT NULL,
   code          VARCHAR(10) NOT NULL,
   description   VARCHAR(1000) NULL,
-  is_deleted    BOOLEAN DEFAULT 0
-)
+  is_deleted    BOOLEAN DEFAULT FALSE
+);
 
 CREATE TABLE coin_uri (
   coin_id       UUID NOT NULL REFERENCES coins (id) on DELETE CASCADE,
   uri           VARCHAR(2000) NOT NULL,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
   updated_at    TIMESTAMP NULL
-)
+);
 
 -- Add indexes
 CREATE INDEX active_users ON users (id) WHERE user_status = 1;
 CREATE INDEX active_books ON books (title) WHERE book_status = 1;
-CREATE INDEX active_exchanges ON exchanges (id) WHERE is_enabled = 1;
-CREATE INDEX active_coins ON coins (id) WHERE is_deleted = 0;
+CREATE INDEX active_exchanges ON exchanges (id) WHERE is_enabled = TRUE;
+CREATE INDEX active_coins ON coins (id) WHERE is_deleted = FALSE;
