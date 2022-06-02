@@ -13,6 +13,13 @@ func PublicRoutes(a *fiber.App) {
 	// Routes for GET method:
 	route.Get("/books", controllers.GetBooks)   // get list of all books
 	route.Get("/book/:id", controllers.GetBook) // get one book by ID
+    // Coins
+    route.Get("/coins", controllers.GetCoins)
+    route.Get("/coins/:id", controllers.GetCoin)
+    route.Get("/coinsbyexchangeid/:id", controllers.GetCoinsByExchangeID)
+    // Exchanges
+    route.Get("/exchanges", controllers.GetExchanges)
+    route.Get("/exchange/:id", controllers.GetExchange)
 
 	// Routes for POST method:
 	route.Post("/user/sign/up", controllers.UserSignUp) // register a new user
