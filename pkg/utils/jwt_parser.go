@@ -37,9 +37,12 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
 
 		// User credentials.
 		credentials := map[string]bool{
-			"book:create": claims["book:create"].(bool),
-			"book:update": claims["book:update"].(bool),
-			"book:delete": claims["book:delete"].(bool),
+			"coin:create": claims["coin:create"].(bool),
+			"coin:update": claims["coin:update"].(bool),
+			"coin:delete": claims["coin:delete"].(bool),
+			"exchange:create": claims["exchange:create"].(bool),
+			"exchange:update": claims["exchange:update"].(bool),
+			"exchange:delete": claims["exchange:delete"].(bool),
 		}
 
 		return &TokenMetadata{

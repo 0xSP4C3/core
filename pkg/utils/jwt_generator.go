@@ -53,9 +53,12 @@ func generateNewAccessToken(id string, credentials []string) (string, error) {
 	// Set public claims:
 	claims["id"] = id
 	claims["expires"] = time.Now().Add(time.Minute * time.Duration(minutesCount)).Unix()
-	claims["book:create"] = false
-	claims["book:update"] = false
-	claims["book:delete"] = false
+	claims["coin:create"] = false
+	claims["coin:update"] = false
+	claims["coin:delete"] = false
+	claims["exchange:create"] = false
+	claims["exchange:update"] = false
+	claims["exchange:delete"] = false
 
 	// Set private token credentials:
 	for _, credential := range credentials {
