@@ -11,11 +11,11 @@ func PublicRoutes(a *fiber.App) {
 	route := a.Group("/api/v1")
 
 	// Routes for GET method:
-	route.Get("/books", controllers.GetBooks)   // get list of all books
-	route.Get("/book/:id", controllers.GetBook) // get one book by ID
+	// route.Get("/books", controllers.GetBooks)   // get list of all books
+	// route.Get("/book/:id", controllers.GetBook) // get one book by ID
     // Coins
     route.Get("/coins", controllers.GetCoins)
-    route.Get("/coins/:id", controllers.GetCoin)
+    route.Get("/coin/:id", controllers.GetCoin)
     route.Get("/coinsbyexchangeid/:id", controllers.GetCoinsByExchangeID)
     // Exchanges
     route.Get("/exchanges", controllers.GetExchanges)
