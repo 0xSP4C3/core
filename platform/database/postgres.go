@@ -21,7 +21,7 @@ func PostgreSQLConnection() (*sqlx.DB, error) {
 	maxLifetimeConn, _ := strconv.Atoi(os.Getenv("DB_MAX_LIFETIME_CONNECTIONS"))
 
 	// Build PostgreSQL connection URL.
-	postgresConnURL, err := utils.ConnectionURLBuilder("postgres")
+	postgresConnURL, err := utils.ConnectionURLBuilder("cockroach")
 	if err != nil {
 		return nil, err
 	}

@@ -12,6 +12,18 @@ func ConnectionURLBuilder(n string) (string, error) {
 
 	// Switch given names.
 	switch n {
+	case "cockroach":
+		// URL for PostgreSQL connection.
+		url = fmt.Sprintf(
+			"postgresql://%s:%s@%s:%s/%s?sslmode=%s&options=%s",
+			os.Getenv("DB_USER"),
+			os.Getenv("DB_PASSWORD"),
+			os.Getenv("DB_HOST"),
+			os.Getenv("DB_PORT"),
+			os.Getenv("DB_NAME"),
+			os.Getenv("DB_SSL_MODE"),
+            os.Getenv("DB_CLUSTER"),
+		)
 	case "postgres":
 		// URL for PostgreSQL connection.
 		url = fmt.Sprintf(
