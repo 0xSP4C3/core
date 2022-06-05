@@ -4,7 +4,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/0xsp4c3/core/pkg/repository"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
@@ -38,7 +37,7 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
 
 		// User credentials.
 		credentials := map[string]bool{
-			repository.CoinCreateCredential: claims["coin:create"].(bool),
+			"coin:create": claims["coin:create"].(bool),
 			"coin:update": claims["coin:update"].(bool),
 			"coin:delete": claims["coin:delete"].(bool),
 			"exchange:create": claims["exchange:create"].(bool),

@@ -60,7 +60,7 @@ func UserSignUp(c *fiber.Ctx) error {
 // @Tags User
 // @Accept json
 // @Produce json
- 
+// @Param email body string true "User Email"
 // @Param password body string true "User Password"
 // @Success 200 {string} status "ok"
 // @Router /v1/user/sign/in [post]
