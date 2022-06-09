@@ -24,7 +24,9 @@ func PostgreSQLConnection() (*sqlx.DB, error) {
 	postgresConnURL, err := utils.ConnectionURLBuilder("cockroach")
 	if err != nil {
 		return nil, err
-	}
+	} else {
+        fmt.Println(postgresConnURL)
+    }
 
 	// Define database connection for PostgreSQL.
 	db, err := sqlx.Connect("pgx", postgresConnURL)

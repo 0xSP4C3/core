@@ -5,7 +5,7 @@ BUILD_DIR = $(PWD)/build
 MIGRATIONS_FOLDER = $(PWD)/platform/migrations
 #DATABASE_URL = postgres://postgres:bYDdskLUHmDyzeY8xnWJfxAhBVwpKumxw8MT3KnPFtTUV48qDKjoAjKWiPiKiXQV@localhost/postgres?sslmode=disable
 
-DATABASE_URL = crdb-postgres://p3nj:cnXy-pqozY6tXD4u2MYfuA@free-tier8.aws-ap-southeast-1.cockroachlabs.cloud:26257/coin_master?sslmode=verify-full&options=--cluster%3Droachi-1871
+DATABASE_URL = crdb-postgres://p3nj:cnXy-pqozY6tXD4u2MYfuA@localhost:26257/coin_master?sslmode=require
 
 
 clean:
