@@ -42,16 +42,35 @@ CREATE TABLE coins (
   description   VARCHAR(1000) NULL,
   is_deleted    BOOLEAN DEFAULT FALSE,
   exchange_id   UUID NOT NULL,
-  CONSTRAINT fk_coin_exchange_id FOREIGN KEY (exchange_id) REFERENCES exchanges (id) ON DELETE CASCADE,
+  CONSTRAINT fk_coin_exchange_id FOREIGN KEY (exchange_id) REFERENCES exchanges (id) ON DELETE CASCADE
 );
 
 -- Create coin_uri table
 CREATE TABLE coin_uri (
   coin_id       UUID NOT NULL UNIQUE PRIMARY KEY,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
-  updated_at    TIMESTAMP NULL
+  updated_at    TIMESTAMP NULL,
   uri           VARCHAR(2000) NOT NULL,
-  CONSTRAINT fk_coin_uri_coin_id FOREIGN KEY (coin_id) REFERENCES coins (id) ON DELETE CASCADE,
+  CONSTRAINT fk_coin_uri_coin_id FOREIGN KEY (coin_id) REFERENCES coins (id) ON DELETE CASCADE
+);
+
+-- Create feed_time table
+CREATE TABLE feed_time (
+  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+  updated_at        TIMESTAMP NULL,
+  start_at          TIMESTAMP NOT NULL,
+  ended_at          TIMESTAMP NOT NULL
+);
+
+-- Create feed_range table
+CREATE TABLE feed_range (
+  id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+  updated_at    TIMESTAMP NULL,
+  name          VARCHAR(25) NOT NULL,
+  description   VARCHAR(1000) NULL,
+  is_enabled    BOOLEAN DEFAULT TRUE
 );
 
 -- Create feeds table
@@ -71,26 +90,7 @@ CREATE TABLE feeds (
   feed_range_id     UUID NOT NULL,
   CONSTRAINT fk_feeds_coin_id FOREIGN KEY (coin_id) REFERENCES coins (id) ON DELETE CASCADE,
   CONSTRAINT fk_feeds_time_id FOREIGN KEY (feed_time_id) REFERENCES feed_time (id) ON DELETE CASCADE,
-  CONSTRAINT fk_feeds_range_id FOREIGN KEY (feed_range_id) REFERENCES feed_range (id) ON DELETE CASCADE,
-);
-
--- Create feed_time table
-CREATE TABLE feed_time (
-  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
-  updated_at        TIMESTAMP NULL,
-  start_at          TIMESTAMP NOT NULL,
-  ended_at          TIMESTAMP NOT NULL,
-);
-
--- Create feed_range table
-CREATE TABLE feed_range (
-  id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
-  updated_at    TIMESTAMP NULL,
-  name          VARCHAR(25) NOT NULL,
-  description   VARCHAR(1000) NULL,
-  is_enabled    BOOLEAN DEFAULT TRUE
+  CONSTRAINT fk_feeds_range_id FOREIGN KEY (feed_range_id) REFERENCES feed_range (id) ON DELETE CASCADE
 );
 
 -- Add indexes
@@ -107,5 +107,4 @@ CREATE INDEX ix_feed_time_start_at ON feed_time (start_at);
 -- feed_range
 CREATE INDEX ix_active_feed_range ON feed_range (id) WHERE is_enabled = TRUE;
 -- feed
-CREATE INDEX ix_feed_range_id ON feed (feed_range_id);
-CREATE INDEX ix_feed_time_id ON feed (feed_time_id);
+CREATE INDEX ix_feed ON feeds (feed_range_id, feed_time_id);
