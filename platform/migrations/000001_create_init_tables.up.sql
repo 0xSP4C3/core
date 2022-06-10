@@ -59,13 +59,45 @@ CREATE TABLE coins (
 
 CREATE TABLE coin_uri (
   coin_id       UUID NOT NULL REFERENCES coins (id) on DELETE CASCADE,
-  uri           VARCHAR(2000) NOT NULL,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
   updated_at    TIMESTAMP NULL
+  uri           VARCHAR(2000) NOT NULL,
+);
+
+CREATE TABLE feed (
+  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+  updated_at        TIMESTAMP NULL,
+  open_bid          DECIMAL NOT NULL,
+  close_bid         DECIMAL NOT NULL,
+  highest_bid       DECIMAL NOT NULL,
+  lowest_bid        DECIMAL NOT NULL,
+  total_trade       DECIMAL NOT NULL,
+  base_volume       DECIMAL NOT NULL,
+  quote_volume      DECIMAL NOT NULL,
+  feed_time_id      UUID NOT NULL REFERENCES feed_time (id),
+  feed_range_id     UUID NOT NULL REFERENCES feed_range (id),
+);
+
+CREATE TABLE feed_time (
+  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+  updated_at        TIMESTAMP NULL,
+  start_at          TIMESTAMP NOT NULL,
+  ended_at          TIMESTAMP NOT NULL,
+);
+
+CREATE TABLE feed_range (
+  id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+  updated_at    TIMESTAMP NULL,
+  name          VARCHAR(25) NOT NULL,
+  description   VARCHAR(1000) NULL,
+  is_enabled    BOOLEAN DEFAULT TRUE
 );
 
 -- Add indexes
-CREATE INDEX active_users ON users (id) WHERE user_status = 1;
 --CREATE INDEX active_books ON books (title) WHERE book_status = 1;
+CREATE INDEX active_users ON users (id) WHERE user_status = 1;
 CREATE INDEX active_exchanges ON exchanges (id) WHERE is_enabled = TRUE;
 CREATE INDEX active_coins ON coins (id) WHERE is_deleted = FALSE;
