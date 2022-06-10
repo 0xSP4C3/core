@@ -1,5 +1,8 @@
 -- Delete tables
---DROP TABLE IF EXISTS books;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS exchanges;
 DROP TABLE IF EXISTS coins;
+DROP TABLE IF EXISTS coin_uri;
+DROP TABLE IF EXISTS feed_time;
+DROP TABLE IF EXISTS feed_range;
+DROP TABLE IF EXISTS feeds;

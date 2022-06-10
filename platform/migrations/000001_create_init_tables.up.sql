@@ -18,18 +18,6 @@ CREATE TABLE users (
   user_role VARCHAR (25) NOT NULL
 );
 
--- Create books table
---CREATE TABLE books (
---    id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
---    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
---    updated_at TIMESTAMP NULL,
---    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
---    title VARCHAR (255) NOT NULL,
---    author VARCHAR (255) NOT NULL,
---    book_status INT NOT NULL,
---    book_attrs JSONB NOT NULL
---);
-
 -- Create exchange table
 CREATE TABLE exchanges (
   -- id            UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
@@ -46,26 +34,29 @@ CREATE TABLE exchanges (
 
 -- Create coins table
 CREATE TABLE coins (
-  -- id            UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
   id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
   updated_at    TIMESTAMP NULL,
-  exchange_id   UUID NOT NULL REFERENCES exchanges (id) ON DELETE CASCADE,
   name          VARCHAR(25) NOT NULL,
   code          VARCHAR(10) NOT NULL,
   description   VARCHAR(1000) NULL,
-  is_deleted    BOOLEAN DEFAULT FALSE
+  is_deleted    BOOLEAN DEFAULT FALSE,
+  exchange_id   UUID NOT NULL,
+  CONSTRAINT fk_coin_exchange_id FOREIGN KEY (exchange_id) REFERENCES exchanges (id) ON DELETE CASCADE,
 );
 
+-- Create coin_uri table
 CREATE TABLE coin_uri (
-  coin_id       UUID NOT NULL REFERENCES coins (id) on DELETE CASCADE,
+  coin_id       UUID NOT NULL UNIQUE PRIMARY KEY,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
   updated_at    TIMESTAMP NULL
   uri           VARCHAR(2000) NOT NULL,
+  CONSTRAINT fk_coin_uri_coin_id FOREIGN KEY (coin_id) REFERENCES coins (id) ON DELETE CASCADE,
 );
 
-CREATE TABLE feed (
-  id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+-- Create feeds table
+CREATE TABLE feeds (
+  id                UUID DEFAULT gen_random_uuid(),
   created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
   updated_at        TIMESTAMP NULL,
   open_bid          DECIMAL NOT NULL,
@@ -75,10 +66,15 @@ CREATE TABLE feed (
   total_trade       DECIMAL NOT NULL,
   base_volume       DECIMAL NOT NULL,
   quote_volume      DECIMAL NOT NULL,
-  feed_time_id      UUID NOT NULL REFERENCES feed_time (id),
-  feed_range_id     UUID NOT NULL REFERENCES feed_range (id),
+  coin_id           UUID NOT NULL,
+  feed_time_id      UUID NOT NULL,
+  feed_range_id     UUID NOT NULL,
+  CONSTRAINT fk_feeds_coin_id FOREIGN KEY (coin_id) REFERENCES coins (id) ON DELETE CASCADE,
+  CONSTRAINT fk_feeds_time_id FOREIGN KEY (feed_time_id) REFERENCES feed_time (id) ON DELETE CASCADE,
+  CONSTRAINT fk_feeds_range_id FOREIGN KEY (feed_range_id) REFERENCES feed_range (id) ON DELETE CASCADE,
 );
 
+-- Create feed_time table
 CREATE TABLE feed_time (
   id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
@@ -87,6 +83,7 @@ CREATE TABLE feed_time (
   ended_at          TIMESTAMP NOT NULL,
 );
 
+-- Create feed_range table
 CREATE TABLE feed_range (
   id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
@@ -97,7 +94,18 @@ CREATE TABLE feed_range (
 );
 
 -- Add indexes
---CREATE INDEX active_books ON books (title) WHERE book_status = 1;
-CREATE INDEX active_users ON users (id) WHERE user_status = 1;
-CREATE INDEX active_exchanges ON exchanges (id) WHERE is_enabled = TRUE;
-CREATE INDEX active_coins ON coins (id) WHERE is_deleted = FALSE;
+-- users
+CREATE INDEX ix_active_users ON users (id) WHERE user_status = 1;
+-- exchanges
+CREATE INDEX ix_active_exchanges ON exchanges (id) WHERE is_enabled = TRUE;
+-- coins
+CREATE INDEX ix_active_coins ON coins (id) WHERE is_deleted = FALSE;
+-- coin_uri
+CREATE INDEX ix_coin_uri_coin_id ON coin_uri (coin_id);
+-- feed_time
+CREATE INDEX ix_feed_time_start_at ON feed_time (start_at);
+-- feed_range
+CREATE INDEX ix_active_feed_range ON feed_range (id) WHERE is_enabled = TRUE;
+-- feed
+CREATE INDEX ix_feed_range_id ON feed (feed_range_id);
+CREATE INDEX ix_feed_time_id ON feed (feed_time_id);
