@@ -7,5 +7,5 @@ This application is based on [fiber-go-template](https://github.com/create-go-ap
 ## Requirements
 - Go `1.17+`
 - Fiber `2.34.0`
-- PostgreSQL `latest`
+- CockroachDB `v22.1.0`
 - Redis `latest`
