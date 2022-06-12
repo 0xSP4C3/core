@@ -1,6 +1,9 @@
 package controllers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/0xsp4c3/core/app/models"
+	"github.com/gofiber/fiber/v2"
+)
 
 
 func QueryFeeds(c *fiber.Ctx) error {
@@ -8,6 +11,25 @@ func QueryFeeds(c *fiber.Ctx) error {
         "error": false,
         "msg":   nil,
         "feeds": nil, // Array results.
+    })
+}
+
+// FeedRange method to get feed available range.
+// @Description Get Feed Ranges.
+// @Summary Get feed's all available time ranges.
+// @Tags Feed
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.FeedTimeRange
+// @Router /v1/feedranges [get]
+func GetFeedRange(c *fiber.Ctx) error {
+    feedRanges := []models.FeedRange{}
+
+    return c.JSON(fiber.Map{
+        "error": false,
+        "msg":   nil,
+        "count": len(feedRanges),
+        "feed_ranges": nil,
     })
 }
 

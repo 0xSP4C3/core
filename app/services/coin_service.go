@@ -10,8 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type CoinService struct {}
 
-func GetCoins() (statusCode int, message string, err error, results []models.Coin) {
+
+func (s *CoinService)GetCoins() (statusCode int, message string, err error, results []models.Coin) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -25,7 +27,7 @@ func GetCoins() (statusCode int, message string, err error, results []models.Coi
     return fiber.StatusOK, "", nil, coins
 }
 
-func GetCoin(id uuid.UUID) (statusCode int, message string, err error, result *models.Coin) {
+func (s *CoinService)GetCoin(id uuid.UUID) (statusCode int, message string, err error, result *models.Coin) {
 
     db, err := database.OpenDBConnection()
     if err != nil {
@@ -39,7 +41,7 @@ func GetCoin(id uuid.UUID) (statusCode int, message string, err error, result *m
     return fiber.StatusOK, "", nil, &coin
 }
 
-func GetCoinByExchangeID(id uuid.UUID) (statusCode int, message string, err error, results []models.Coin) {
+func (s *CoinService)GetCoinByExchangeID(id uuid.UUID) (statusCode int, message string, err error, results []models.Coin) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -58,7 +60,7 @@ func GetCoinByExchangeID(id uuid.UUID) (statusCode int, message string, err erro
     return fiber.StatusOK, "", nil, coins
 }
 
-func CreateCoin(c *models.Coin) (statusCode int, message string, err error) {
+func (s *CoinService)CreateCoin(c *models.Coin) (statusCode int, message string, err error) {
 	// Create db connection
 	db, err := database.OpenDBConnection()
 	if err != nil {
@@ -112,7 +114,7 @@ func UpdateCoin(c *models.Coin) (statusCode int, message string, err error) {
     return fiber.StatusNoContent, "", nil
 }
 
-func DeleteCoin(c *models.Coin) (statusCode int, message string, err error) {
+func (s *CoinService)DeleteCoin(c *models.Coin) (statusCode int, message string, err error) {
     validate := utils.NewValidator()
     if err := validate.StructPartial(c); err != nil {
         return fiber.StatusBadRequest, "", err

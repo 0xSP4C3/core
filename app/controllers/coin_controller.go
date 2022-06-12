@@ -3,6 +3,7 @@ package controllers
 import (
 	"time"
 
+	"github.com/0xsp4c3/core/app/services/interfaces"
 	"github.com/0xsp4c3/core/app/models"
 	"github.com/0xsp4c3/core/app/services"
 	"github.com/0xsp4c3/core/pkg/repository"
@@ -10,6 +11,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
+
+var s interfaces.CoinService = &services.CoinService{}
 
 // GetCoins funcs gets all exists coins.
 // @Description Get all exists coins.
@@ -20,7 +23,7 @@ import (
 // @Success 200 {array} models.Coin
 // @Router /v1/coins [get]
 func GetCoins(c *fiber.Ctx) error {
-	statusCode, message, err, coins := services.GetCoins()
+	statusCode, message, err, coins := s.GetCoins()
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -60,7 +63,7 @@ func GetCoin(c *fiber.Ctx) error {
 		})
 	}
 
-	statusCode, message, err, coin := services.GetCoin(id)
+	statusCode, message, err, coin := s.GetCoin(id)
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -99,7 +102,7 @@ func GetCoinsByExchangeID(c *fiber.Ctx) error {
 		})
 	}
 
-	statusCode, message, err, coins := services.GetCoinByExchangeID(id)
+	statusCode, message, err, coins := s.GetCoinByExchangeID(id)
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -181,7 +184,7 @@ func CreateCoin(c *fiber.Ctx) error {
 		})
 	}
 
-	statusCode, message, err := services.CreateCoin(coin)   
+	statusCode, message, err := s.CreateCoin(coin)   
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -321,7 +324,7 @@ func DeleteCoin(c *fiber.Ctx) error {
 		})
 	}
 
-    statusCode, message, err := services.DeleteCoin(coin)
+    statusCode, message, err := s.DeleteCoin(coin)
     if err != nil {
         var msg string
         if message == "" {
