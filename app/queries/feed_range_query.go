@@ -37,7 +37,7 @@ func (q *FeedRangeQueries) GetFeedRange(id uuid.UUID) (models.FeedRange, error) 
 }
 
 func (q *FeedRangeQueries) CreateFeedRange(f *models.FeedRange) error {
-    query := `INSERT INTO feed_range VALUES ($1, $2, $3, $4, )`
+    query := `INSERT INTO feed_range VALUES ($1, $2, $3, $4, $5, $6)`
 
     _, err := q.Exec(query, f.ID, f.CreatedAt, f.UpdatedAt, f.Name, f.Description, f.IsEnabled)
     if err != nil {
