@@ -89,7 +89,7 @@ func (s *CoinService)CreateCoin(c *models.Coin) (statusCode int, message string,
     return fiber.StatusCreated, "", nil
 }
 
-func UpdateCoin(c *models.Coin) (statusCode int, message string, err error) {
+func (s *CoinService)UpdateCoin(c *models.Coin) (statusCode int, message string, err error) {
 	db, err := database.OpenDBConnection()
 	if err != nil {
         return fiber.StatusInternalServerError, "", err

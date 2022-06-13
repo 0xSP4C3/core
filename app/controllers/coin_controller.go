@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var s interfaces.CoinService = &services.CoinService{}
+var s interfaces.CoinInterface = &services.CoinService{}
 
 // GetCoins funcs gets all exists coins.
 // @Description Get all exists coins.
@@ -258,7 +258,7 @@ func UpdateCoin(c *fiber.Ctx) error {
 		})
 	}
 
-    statusCode, message, err := services.UpdateCoin(coin)
+    statusCode, message, err := s.UpdateCoin(coin)
     if err != nil {
         var msg string
         if message == "" {
