@@ -22,7 +22,7 @@ func QueryFeeds(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {array} models.FeedTimeRange
 // @Router /v1/feedranges [get]
-func GetFeedRange(c *fiber.Ctx) error {
+func GetFeedRanges(c *fiber.Ctx) error {
     feedRanges := []models.FeedRange{}
 
     return c.JSON(fiber.Map{
@@ -30,6 +30,14 @@ func GetFeedRange(c *fiber.Ctx) error {
         "msg":   nil,
         "count": len(feedRanges),
         "feed_ranges": nil,
+    })
+}
+
+func GetFeedRange(c *fiber.Ctx) error {
+    return c.JSON(fiber.Map{
+        "error": false,
+        "msg":   nil,
+        "feed_range": nil,
     })
 }
 
