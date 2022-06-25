@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var s interfaces.CoinInterface = &services.CoinService{}
+var coinService interfaces.CoinInterface = &services.CoinService{}
 
 // GetCoins funcs gets all exists coins.
 // @Description Get all exists coins.
@@ -23,7 +23,7 @@ var s interfaces.CoinInterface = &services.CoinService{}
 // @Success 200 {array} models.Coin
 // @Router /v1/coins [get]
 func GetCoins(c *fiber.Ctx) error {
-	statusCode, message, err, coins := s.GetCoins()
+	statusCode, message, err, coins := coinService.GetCoins()
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -63,7 +63,7 @@ func GetCoin(c *fiber.Ctx) error {
 		})
 	}
 
-	statusCode, message, err, coin := s.GetCoin(id)
+	statusCode, message, err, coin := coinService.GetCoin(id)
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -102,7 +102,7 @@ func GetCoinsByExchangeID(c *fiber.Ctx) error {
 		})
 	}
 
-	statusCode, message, err, coins := s.GetCoinByExchangeID(id)
+	statusCode, message, err, coins := coinService.GetCoinByExchangeID(id)
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -184,7 +184,7 @@ func CreateCoin(c *fiber.Ctx) error {
 		})
 	}
 
-	statusCode, message, err := s.CreateCoin(coin)   
+	statusCode, message, err := coinService.CreateCoin(coin)   
 	if err != nil {
 		var msg string
 		if message == "" {
@@ -258,7 +258,7 @@ func UpdateCoin(c *fiber.Ctx) error {
 		})
 	}
 
-    statusCode, message, err := s.UpdateCoin(coin)
+    statusCode, message, err := coinService.UpdateCoin(coin)
     if err != nil {
         var msg string
         if message == "" {
@@ -324,7 +324,7 @@ func DeleteCoin(c *fiber.Ctx) error {
 		})
 	}
 
-    statusCode, message, err := s.DeleteCoin(coin)
+    statusCode, message, err := coinService.DeleteCoin(coin)
     if err != nil {
         var msg string
         if message == "" {
