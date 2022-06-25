@@ -5,11 +5,14 @@ import (
 
 	"github.com/0xsp4c3/core/app/models"
 	"github.com/0xsp4c3/core/app/services"
+	"github.com/0xsp4c3/core/app/services/interfaces"
 	"github.com/0xsp4c3/core/pkg/repository"
 	"github.com/0xsp4c3/core/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
+
+var exchangeService interfaces.ExchangeInterface = &services.ExchangeService{}
 
 // GetExchange funcs gets all exists exchanges.
 // @Description Get all exists exchanges.
@@ -20,7 +23,7 @@ import (
 // @Success 200 {array} models.Exchange
 // @Router /v1/exchanges [get]
 func GetExchanges(c *fiber.Ctx) error {
-    statusCode, message, err, exchanges := services.GetExchanges()
+    statusCode, message, err, exchanges := exchangeService.GetExchanges()
     if err != nil {
         var msg string
         if message == "" {
@@ -59,7 +62,7 @@ func GetExchange(c *fiber.Ctx) error {
             "msg":      err.Error(),
         })
     }
-    statusCode, message, err, exchange := services.GetExchange(id)
+    statusCode, message, err, exchange := exchangeService.GetExchange(id)
     if err != nil {
         var msg string
         if message == "" {
@@ -129,7 +132,7 @@ func CreateExchange(c *fiber.Ctx) error {
         })
     }
 
-    statusCode, message, err := services.CreateExchange(exchange)
+    statusCode, message, err := exchangeService.CreateExchange(exchange)
     if err != nil {
         var msg string
         if message == "" {
@@ -200,7 +203,7 @@ func UpdateExchange(c *fiber.Ctx) error {
         })
     }
 
-    statusCode, message, err := services.UpdateExchange(exchange)
+    statusCode, message, err := exchangeService.UpdateExchange(exchange)
     if err != nil {
         var msg string
         if message == "" {
@@ -263,7 +266,7 @@ func DeleteExchange(c *fiber.Ctx) error {
         })
     }
 
-    statusCode, message, err := services.DeleteExchange(exchange)
+    statusCode, message, err := exchangeService.DeleteExchange(exchange)
     if err != nil {
         var msg string
         if message == "" {

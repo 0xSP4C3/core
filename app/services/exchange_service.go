@@ -10,7 +10,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetExchanges() (statusCode int, message string, err error, results []models.Exchange) {
+type ExchangeService struct {}
+
+func (s *ExchangeService)GetExchanges() (statusCode int, message string, err error, results []models.Exchange) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -27,7 +29,7 @@ func GetExchanges() (statusCode int, message string, err error, results []models
     return fiber.StatusOK, "", nil, exchanges
 }
 
-func GetExchange(id uuid.UUID) (statusCode int, message string, err error, result *models.Exchange) {
+func (s *ExchangeService)GetExchange(id uuid.UUID) (statusCode int, message string, err error, result *models.Exchange) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
@@ -44,7 +46,7 @@ func GetExchange(id uuid.UUID) (statusCode int, message string, err error, resul
     return fiber.StatusOK, "", nil, &exchange
 }
 
-func CreateExchange(e *models.Exchange) (statusCode int, message string, err error) {
+func (s *ExchangeService)CreateExchange(e *models.Exchange) (statusCode int, message string, err error) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err
@@ -71,7 +73,7 @@ func CreateExchange(e *models.Exchange) (statusCode int, message string, err err
 
 }
 
-func UpdateExchange(e *models.Exchange) (statusCode int, message string, err error) {
+func (s *ExchangeService)UpdateExchange(e *models.Exchange) (statusCode int, message string, err error) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err
@@ -100,7 +102,7 @@ func UpdateExchange(e *models.Exchange) (statusCode int, message string, err err
     return fiber.StatusNoContent, "", nil
 }
 
-func DeleteExchange(e *models.Exchange) (statusCode int, message string, err error) {
+func (s *ExchangeService)DeleteExchange(e *models.Exchange) (statusCode int, message string, err error) {
 
     validate := utils.NewValidator()
     if err := validate.StructPartial(e, "id"); err != nil {
