@@ -37,7 +37,7 @@ type FeedTime struct {
     EndedAt     time.Time   `db:"ended_at" json:"ended_at" validate:"required"`
 }
 
-type FeedRange struct {
+type TimeFrame struct {
     ID          uuid.UUID   `db:"id" json:"id" validate:"required,uuid"`
     CreatedAt   time.Time   `db:"created_at" json:"created_at"`
     UpdatedAt   time.Time   `db:"upadted_at" json:"updated_at"`

@@ -63,8 +63,8 @@ CREATE TABLE feed_time (
   ended_at          TIMESTAMP NOT NULL
 );
 
--- Create feed_range table
-CREATE TABLE feed_range (
+-- Create time_frame table
+CREATE TABLE time_frame (
   id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
   updated_at    TIMESTAMP NULL,
@@ -87,10 +87,10 @@ CREATE TABLE feeds (
   quote_volume      DECIMAL NOT NULL,
   coin_id           UUID NOT NULL,
   feed_time_id      UUID NOT NULL,
-  feed_range_id     UUID NOT NULL,
+  time_frame_id     UUID NOT NULL,
   CONSTRAINT fk_feeds_coin_id FOREIGN KEY (coin_id) REFERENCES coins (id) ON DELETE CASCADE,
   CONSTRAINT fk_feeds_time_id FOREIGN KEY (feed_time_id) REFERENCES feed_time (id) ON DELETE CASCADE,
-  CONSTRAINT fk_feeds_range_id FOREIGN KEY (feed_range_id) REFERENCES feed_range (id) ON DELETE CASCADE
+  CONSTRAINT fk_feeds_range_id FOREIGN KEY (time_frame_id) REFERENCES time_frame (id) ON DELETE CASCADE
 );
 
 -- Add indexes
@@ -104,7 +104,7 @@ CREATE INDEX ix_active_coins ON coins (id) WHERE is_deleted = FALSE;
 CREATE INDEX ix_coin_uri_coin_id ON coin_uri (coin_id);
 -- feed_time
 CREATE INDEX ix_feed_time_start_at ON feed_time (start_at);
--- feed_range
-CREATE INDEX ix_active_feed_range ON feed_range (id) WHERE is_enabled = TRUE;
+-- time_frame
+CREATE INDEX ix_active_time_frame ON time_frame (id) WHERE is_enabled = TRUE;
 -- feed
-CREATE INDEX ix_feed ON feeds (feed_range_id, feed_time_id);
+CREATE INDEX ix_feed ON feeds (time_frame_id, feed_time_id);
