@@ -56,14 +56,15 @@ func CreateFeed(c *fiber.Ctx) error {
     })
 }
 
+// UpdateFeed method to update feed
+// @Description Update Feed
+// @Summary Update Feed.
+// @Tags Feed
+// @Accept json
+// @Produce json
+// @Success 204
+// @Router /v1/updatefeed [get]
 func UpdateFeed(c *fiber.Ctx) error {
-    return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
-        "error": false,
-        "msg":   nil,
-    })
-}
-
-func DeleteFeed(c *fiber.Ctx) error {
     return c.Status(fiber.StatusNoContent).JSON(fiber.Map{
         "error": false,
         "msg":   nil,
@@ -89,13 +90,6 @@ func UpdateTimeFrame(c *fiber.Ctx) error {
     return c.Status(fiber.StatusCreated).JSON(fiber.Map{
         "error": false,
         "msg":   "TimeFrame Updated.",
-    })
-}
-
-func DeleteTimeFrame(c *fiber.Ctx) error {
-    return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-        "error": false,
-        "msg":   "TimeFrame Deleted.",
     })
 }
 

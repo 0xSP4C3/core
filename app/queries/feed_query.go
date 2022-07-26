@@ -56,17 +56,17 @@ func (q *FeedQueries) QueryFeedsByCoinId(coin_id uuid.UUID) ([]models.Feed, erro
     return feeds, nil
 }
 
-func (q *FeedQueries) QueryFeedsByCoinAndRangeId(range_id, coin_id uuid.UUID) ([]models.Feed, error) {
+func (q *FeedQueries) QueryFeedsByCoinAndFrameId(frame_id, coin_id uuid.UUID) ([]models.Feed, error) {
     feeds := []models.Feed{}
 
     query := `SELECT * FROM feeds f
     INNER JOIN coin c (nolock)
     ON f.coin_id = c.id
-    INNER JOIN feed_range fr (nolock)
-    ON f.range_id = fr.id
-    WHERE c.id = $1 AND fr.id = $2`
+    INNER JOIN time_frame tr (nolock)
+    ON f.frame_id = tr.id
+    WHERE c.id = $1 AND tr.id = $2`
 
-    err := q.Get(&feeds, query, coin_id, range_id)
+    err := q.Get(&feeds, query, coin_id, frame_id)
     if err != nil {
         return feeds, err
     }

@@ -8,7 +8,7 @@ type Queries struct {
 	*queries.BookQueries // load queries from Book model
     *queries.CoinQueries // load queries from Coin model
     *queries.FeedQueries // load queries from Feed model
-    *queries.FeedRangeQueries // load queries from FeedRange model
+    *queries.TimeFrameQueries // load queries from FeedRange model
     *queries.ExchangeQueries // load queries from Exchange model
 }
 
@@ -26,7 +26,7 @@ func OpenDBConnection() (*Queries, error) {
 		BookQueries: &queries.BookQueries{DB: db}, // from Book model
         CoinQueries: &queries.CoinQueries{DB: db}, // from Coin model
         FeedQueries: &queries.FeedQueries{DB: db},
-        FeedRangeQueries: &queries.FeedRangeQueries{DB: db},
+        TimeFrameQueries: &queries.TimeFrameQueries{DB: db},
         ExchangeQueries: &queries.ExchangeQueries{DB: db},
 	}, nil
 }

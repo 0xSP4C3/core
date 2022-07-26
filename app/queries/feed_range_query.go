@@ -6,37 +6,37 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type FeedRangeQueries struct {
+type TimeFrameQueries struct {
     *sqlx.DB
 }
 
-func (q *FeedRangeQueries)GetFeedRanges() ([]models.FeedRange, error) {
-    feedRanges := []models.FeedRange{}
+func (q *TimeFrameQueries)GetFeedRanges() ([]models.TimeFrame, error) {
+    timeFrames := []models.TimeFrame{}
 
     query := `SELECT * FROM feed_range`
 
-    err := q.Get(&feedRanges, query)
+    err := q.Get(&timeFrames, query)
     if err != nil {
-        return feedRanges, err
+        return timeFrames, err
     }
 
-    return feedRanges, nil
+    return timeFrames, nil
 }
 
-func (q *FeedRangeQueries) GetFeedRange(id uuid.UUID) (models.FeedRange, error) {
-    feedRange := models.FeedRange{}
+func (q *TimeFrameQueries) GetTimeFrame(id uuid.UUID) (models.TimeFrame, error) {
+    timeFrame := models.TimeFrame{}
 
     query := `SELECT * FROM feed_range WHERE ID = $1`
 
-    err := q.Get(&feedRange, query, id)
+    err := q.Get(&timeFrame, query, id)
     if err != nil {
-        return feedRange, err
+        return timeFrame, err
     }
 
-    return feedRange, nil
+    return timeFrame, nil
 }
 
-func (q *FeedRangeQueries) CreateFeedRange(f *models.FeedRange) error {
+func (q *TimeFrameQueries) CreateFeedRange(f *models.TimeFrame) error {
     query := `INSERT INTO feed_range VALUES ($1, $2, $3, $4, $5, $6)`
 
     _, err := q.Exec(query, f.ID, f.CreatedAt, f.UpdatedAt, f.Name, f.Description, f.IsEnabled)

@@ -24,13 +24,13 @@ func (s *FeedService) GetFeeds() (statusCode int, message string, err error, res
     return fiber.StatusOK, "", nil, feeds
 }
 
-func (s *FeedService) QueryFeedsByTimeRange(range_id uuid.UUID) (statusCode int, message string, err error, results []models.Feed) {
+func (s *FeedService) QueryFeedsByTimeFrame(range_id uuid.UUID) (statusCode int, message string, err error, results []models.Feed) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
     }
 
-    feed_range, err := db.GetFeedRange(range_id)
+    feed_range, err := db.GetTimeFrame(range_id)
     if err != nil {
         return fiber.StatusNotFound, "Feed range not found.", err, nil
     }
@@ -62,12 +62,12 @@ func (s *FeedService) QueryFeedsByCoinId(coin_id uuid.UUID) (statusCode int, mes
     return fiber.StatusOK, "", err, feeds
 }
 
-func (s *FeedService) QueryFeedsByCoinAndRangeId(range_id, coin_id uuid.UUID) (statusCode int, message string, err error, results []models.Feed) {
+func (s *FeedService) QueryFeedsByCoinAndFrameId(range_id, coin_id uuid.UUID) (statusCode int, message string, err error, results []models.Feed) {
     db, err := database.OpenDBConnection()
     if err != nil {
         return fiber.StatusInternalServerError, "", err, nil
     }
-    feed_range, err := db.GetFeedRange(range_id)
+    feed_range, err := db.GetTimeFrame(range_id)
     if err != nil {
         return fiber.StatusNotFound, "Feed Range not found.", err, nil
     }
@@ -77,7 +77,7 @@ func (s *FeedService) QueryFeedsByCoinAndRangeId(range_id, coin_id uuid.UUID) (s
         return fiber.StatusNotFound, "Coin not found.", err, nil
     }
 
-    feeds, err := db.QueryFeedsByCoinAndRangeId(feed_range.ID, coin.ID)
+    feeds, err := db.QueryFeedsByCoinAndFrameId(feed_range.ID, coin.ID)
     if err != nil {
         return fiber.StatusNotFound, "Feeds not found.", err, nil
     }
